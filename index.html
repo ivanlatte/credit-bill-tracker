@@ -48,7 +48,7 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;backgrou
 .bill-list{display:flex;flex-direction:column;gap:8px;margin-bottom:16px;}
 .bi{background:white;border-radius:12px;border-left:3px solid #e8e8e8;padding:12px 14px;display:flex;align-items:center;gap:10px;}
 .bi.paid{border-left-color:#0a8a5c;}.bi.unpaid{border-left-color:#c0392b;}.bi.overdue{border-left-color:#d4830a;background:#fffbf0;}
-.bi-dot{width:34px;height:22px;border-radius:4px;flex-shrink:0;display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:600;color:white;}
+.bi-logo{width:24px;height:24px;border-radius:6px;flex-shrink:0;object-fit:contain;background:#f0f0f0;padding:2px;}
 .bi-info{flex:1;min-width:0;}
 .bi-name{font-size:14px;font-weight:500;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
 .bi-meta{font-size:11px;color:#aaa;margin-top:2px;}
@@ -64,9 +64,6 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;backgrou
 
 .panel{background:white;border-radius:16px;padding:18px;margin-bottom:12px;}
 .panel h3{font-size:15px;font-weight:600;margin-bottom:14px;}
-.ptabs{display:flex;gap:6px;margin-bottom:14px;}
-.ptab{flex:1;padding:7px;border-radius:8px;border:1px solid #e8e8e8;font-size:12px;cursor:pointer;color:#888;background:white;transition:all .15s;}
-.ptab.on{background:#f0f0f0;color:#1a1a1a;border-color:#ddd;}
 
 .fg{display:flex;flex-direction:column;gap:4px;margin-bottom:10px;}
 .fg label{font-size:12px;color:#888;}
@@ -74,29 +71,13 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;backgrou
 .fg input:focus,.fg select:focus{border-color:#aaa;background:white;}
 .fg-row{display:grid;grid-template-columns:1fr 1fr;gap:8px;}
 
-.cdots{display:flex;gap:7px;flex-wrap:wrap;margin-top:5px;}
-.cdot{width:22px;height:22px;border-radius:50%;cursor:pointer;border:2.5px solid transparent;}
-.cdot.on{border-color:#1a1a1a;}
-
 .btn-main{width:100%;margin-top:4px;padding:11px;font-size:14px;font-weight:600;border-radius:10px;background:#1a1a1a;color:white;border:none;cursor:pointer;}
 .btn-main:disabled{opacity:.4;cursor:not-allowed;}
 
-.upload-zone{border:1.5px dashed #ddd;border-radius:10px;padding:22px;text-align:center;cursor:pointer;margin-bottom:10px;}
-.upload-zone input{display:none;}
-.upload-hint{font-size:13px;color:#888;margin-top:6px;}
-.upload-sub{font-size:11px;color:#bbb;margin-top:2px;}
-.tip{font-size:11px;color:#888;background:#f7f7f7;border-radius:8px;padding:8px 10px;margin-bottom:12px;line-height:1.6;}
-.ai-result{background:#f7f7f7;border-radius:10px;padding:12px;margin-bottom:10px;}
-.ai-row{display:flex;justify-content:space-between;padding:4px 0;border-bottom:1px solid #efefef;font-size:13px;}
-.ai-row:last-child{border-bottom:none;}
-.ai-lbl{color:#888;}
-.loading-row{text-align:center;padding:1rem;font-size:13px;color:#888;}
-.dot{display:inline-block;animation:ld 1.2s infinite;}
-@keyframes ld{0%,80%,100%{opacity:.2;}40%{opacity:1;}}
 
 .bank-list{display:flex;flex-direction:column;gap:6px;margin-bottom:12px;}
 .bank-item{display:flex;align-items:center;gap:10px;padding:10px 12px;background:#fafafa;border-radius:8px;border:1px solid #efefef;}
-.bank-dot{width:28px;height:18px;border-radius:3px;flex-shrink:0;}
+.bank-logo{width:22px;height:22px;border-radius:5px;object-fit:contain;background:#f0f0f0;padding:2px;flex-shrink:0;}
 .bank-name{flex:1;font-size:13px;font-weight:500;}
 .bank-due{font-size:12px;color:#aaa;white-space:nowrap;}
 .bank-del{border:none;background:transparent;color:#ccc;cursor:pointer;font-size:16px;line-height:1;}
@@ -161,13 +142,7 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;backgrou
     <!-- 新增本月帳單 -->
     <div class="panel">
       <h3>新增本月帳單</h3>
-      <div class="ptabs">
-        <button class="ptab on" onclick="setPTab('quick',this)">快速新增</button>
-        <button class="ptab" onclick="setPTab('scan',this)">上傳帳單</button>
-      </div>
-
-      <div id="tab-quick">
-        <div id="no-banks-hint" style="display:none;text-align:center;padding:.5rem 0 1rem;font-size:13px;color:#aaa;">請先至下方「管理銀行」新增銀行</div>
+      <div id="no-banks-hint" style="display:none;text-align:center;padding:.5rem 0 1rem;font-size:13px;color:#aaa;">請先至下方「管理銀行」新增銀行</div>
         <div id="quick-form">
           <div class="fg">
             <label>選擇銀行</label>
@@ -179,27 +154,6 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;backgrou
           </div>
           <button class="btn-main" id="btn-quick-add" onclick="addBill()">新增</button>
         </div>
-      </div>
-
-      <div id="tab-scan" style="display:none;">
-        <div class="tip">建議上傳前遮蔽卡號、姓名等個資，只保留金額與截止日區域。</div>
-        <div class="upload-zone" onclick="document.getElementById('bill-file').click()">
-          <input type="file" id="bill-file" accept="image/*,application/pdf" onchange="handleUpload(event)">
-          <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="#aaa" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
-            <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/>
-            <polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/>
-          </svg>
-          <div class="upload-hint" id="upload-hint">點擊上傳帳單截圖或 PDF</div>
-          <div class="upload-sub">支援 JPG / PNG / PDF</div>
-        </div>
-        <div id="scan-loading" style="display:none" class="loading-row">
-          AI 分析中<span class="dot" style="animation-delay:0s">．</span><span class="dot" style="animation-delay:.4s">．</span><span class="dot" style="animation-delay:.8s">．</span>
-        </div>
-        <div id="ai-result-area" style="display:none;">
-          <div class="ai-result" id="ai-result-content"></div>
-          <button class="btn-main" onclick="addFromScan()">確認新增</button>
-        </div>
-      </div>
     </div>
 
     <!-- 管理銀行 -->
@@ -222,10 +176,6 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;backgrou
             <option value="next">帳單次月</option>
           </select>
         </div>
-      </div>
-      <div class="fg">
-        <label>顏色</label>
-        <div class="cdots" id="cdots"></div>
       </div>
       <button class="btn-main" id="btn-add-bank" onclick="addBank()">新增銀行</button>
     </div>
@@ -309,21 +259,59 @@ window._savePayments = async (monthKey, obj) => {
 </script>
 
 <script>
-const COLORS = ['#378ADD','#1D9E75','#D85A30','#D4537E','#7F77DD','#BA7517','#888780','#E24B4A'];
-let selColor = COLORS[0];
 let currentYear = new Date().getFullYear(), currentMonth = new Date().getMonth(), filter = 'all';
-let scanData = null;
 window._data = { banks: [], bills: {}, payments: {} };
 
-// Colour picker
-const cdotsEl = document.getElementById('cdots');
-COLORS.forEach(c => {
-  const d = document.createElement('div');
-  d.className = 'cdot' + (c === selColor ? ' on' : '');
-  d.style.background = c;
-  d.onclick = () => { selColor = c; document.querySelectorAll('.cdot').forEach(x => x.classList.remove('on')); d.classList.add('on'); };
-  cdotsEl.appendChild(d);
-});
+// Bank domain lookup for favicon
+const BANK_DOMAINS = {
+  '國泰世華': 'cathaybk.com.tw',
+  '國泰': 'cathaybk.com.tw',
+  '玉山': 'esunbank.com.tw',
+  '中信': 'ctbcbank.com',
+  '中國信託': 'ctbcbank.com',
+  '富邦': 'fubon.com',
+  '台北富邦': 'fubon.com',
+  '台新': 'taishinbank.com.tw',
+  '永豐': 'sinopac.com',
+  '第一銀行': 'firstbank.com.tw',
+  '第一': 'firstbank.com.tw',
+  '台灣銀行': 'bot.com.tw',
+  '台銀': 'bot.com.tw',
+  '合庫': 'tcb-bank.com.tw',
+  '合作金庫': 'tcb-bank.com.tw',
+  '兆豐': 'megabank.com.tw',
+  '彰化銀行': 'bankchb.com.tw',
+  '彰銀': 'bankchb.com.tw',
+  '華南': 'hncb.com.tw',
+  '遠東': 'feib.com.tw',
+  '滙豐': 'hsbc.com.tw',
+  'HSBC': 'hsbc.com.tw',
+  '星展': 'dbs.com.tw',
+  'DBS': 'dbs.com.tw',
+  '花旗': 'citibank.com.tw',
+  '聯邦': 'ubot.com.tw',
+  '凱基': 'kgibank.com',
+  '安泰': 'entiebank.com.tw',
+  '上海商銀': 'scsb.com.tw',
+  '京城': 'kccb.com.tw',
+  '台中銀': 'bancotaiwan.com.tw',
+  '大眾': 'tcbbank.com.tw',
+};
+
+function faviconUrl(bankName) {
+  let domain = null;
+  for (const [key, val] of Object.entries(BANK_DOMAINS)) {
+    if (bankName.includes(key) || key.includes(bankName)) { domain = val; break; }
+  }
+  if (!domain) return null;
+  return `https://www.google.com/s2/favicons?domain=${domain}&sz=64`;
+}
+
+function bankLogoHtml(bank, cls) {
+  const url = faviconUrl(bank.name);
+  if (url) return `<img class="${cls}" src="${url}" alt="${bank.name}" onerror="this.style.display='none';this.nextElementSibling.style.display='flex'"><span class="${cls}" style="display:none;background:#e8e8e8;color:#888;font-size:10px;font-weight:600;align-items:center;justify-content:center;">${bank.name[0]}</span>`;
+  return `<span class="${cls}" style="background:#e8e8e8;color:#888;font-size:10px;font-weight:600;display:flex;align-items:center;justify-content:center;">${bank.name[0]}</span>`;
+}
 
 function mk(y, m) { return `${y}-${String(m+1).padStart(2,'0')}`; }
 
@@ -352,7 +340,6 @@ async function addBank() {
     id: Date.now().toString(), name,
     due: parseInt(document.getElementById('b-due').value) || 25,
     dueMonth: document.getElementById('b-due-month').value,
-    color: selColor
   };
   window._data.banks.push(bank);
   render();
@@ -402,72 +389,8 @@ async function togglePay(bankId) {
 }
 window.togglePay = togglePay;
 
-// ── Scan ──
-async function handleUpload(e) {
-  const file = e.target.files[0]; if (!file) return;
-  document.getElementById('upload-hint').textContent = file.name;
-  document.getElementById('scan-loading').style.display = 'block';
-  document.getElementById('ai-result-area').style.display = 'none';
-  const b64 = await new Promise((res,rej) => { const r=new FileReader(); r.onload=()=>res(r.result.split(',')[1]); r.onerror=rej; r.readAsDataURL(file); });
-  try {
-    const resp = await fetch('https://api.anthropic.com/v1/messages', {
-      method: 'POST', headers: {'Content-Type':'application/json'},
-      body: JSON.stringify({
-        model: 'claude-sonnet-4-20250514', max_tokens: 500,
-        messages: [{role:'user', content:[
-          {type:'image', source:{type:'base64', media_type:file.type, data:b64}},
-          {type:'text', text:'這是一張信用卡帳單，請從中找出以下資訊並只回傳 JSON，不要任何說明文字或 markdown：{"bank":"發卡銀行名稱","amount":本期應繳金額數字不含逗號,"due":繳款截止日是幾號只要數字1到31,"dueMonth":"若截止日在帳單月份的次月則填next，否則填same"}。若找不到某欄位就填空字串或0。'}
-        ]}]
-      })
-    });
-    const d = await resp.json();
-    const text = d.content?.map(x => x.text||'').join('');
-    const parsed = JSON.parse(text.replace(/```json|```/g,'').trim());
-    scanData = { bank: parsed.bank||'', amount: parseInt(parsed.amount)||0, due: parseInt(parsed.due)||25, dueMonth: parsed.dueMonth||'same' };
-    const dml = scanData.dueMonth==='next' ? '次月' : '當月';
-    document.getElementById('ai-result-content').innerHTML = `
-      <div class="ai-row"><span class="ai-lbl">發卡銀行</span><span>${scanData.bank||'—'}</span></div>
-      <div class="ai-row"><span class="ai-lbl">帳單金額</span><span>NT$ ${scanData.amount.toLocaleString()}</span></div>
-      <div class="ai-row"><span class="ai-lbl">繳費截止日</span><span>${dml} ${scanData.due} 日</span></div>`;
-    document.getElementById('ai-result-area').style.display = 'block';
-  } catch(err) {
-    document.getElementById('ai-result-content').innerHTML = '<div style="color:#c0392b;font-size:13px;">辨識失敗，請改用快速新增</div>';
-    document.getElementById('ai-result-area').style.display = 'block';
-  }
-  document.getElementById('scan-loading').style.display = 'none';
-}
-window.handleUpload = handleUpload;
-
-async function addFromScan() {
-  if (!scanData) return;
-  // match or create bank
-  let bank = window._data.banks.find(b => b.name.includes(scanData.bank) || scanData.bank.includes(b.name));
-  if (!bank && scanData.bank) {
-    bank = { id: Date.now().toString(), name: scanData.bank, due: scanData.due, dueMonth: scanData.dueMonth, color: COLORS[window._data.banks.length % COLORS.length] };
-    window._data.banks.push(bank);
-    await window._saveBank(bank);
-  }
-  if (bank) {
-    const k = mk(currentYear, currentMonth);
-    if (!window._data.bills[k]) window._data.bills[k] = {};
-    window._data.bills[k][bank.id] = scanData.amount;
-    await window._saveBills(k, window._data.bills[k]);
-  }
-  scanData = null;
-  document.getElementById('ai-result-area').style.display = 'none';
-  document.getElementById('bill-file').value = '';
-  document.getElementById('upload-hint').textContent = '點擊上傳帳單截圖或 PDF';
-  render();
-}
-window.addFromScan = addFromScan;
 
 // ── Helpers ──
-function setPTab(t, btn) {
-  ['quick','scan'].forEach(x => { document.getElementById('tab-'+x).style.display = x===t ? '' : 'none'; });
-  document.querySelectorAll('.ptab').forEach(x => x.classList.remove('on'));
-  btn.classList.add('on');
-}
-window.setPTab = setPTab;
 
 function chMon(d) {
   currentMonth += d;
@@ -526,7 +449,7 @@ window.render = function() {
       const div = document.createElement('div');
       div.className = 'bi ' + s;
       div.innerHTML = `
-        <div class="bi-dot" style="background:${bank.color}">${bank.name[0]}</div>
+        ${bankLogoHtml(bank, 'bi-logo')}
         <div class="bi-info">
           <div class="bi-name">${bank.name}${bdgMap[s]}</div>
           <div class="bi-meta">截止：${dml} ${bank.due} 日</div>
@@ -569,7 +492,7 @@ window.render = function() {
       const div = document.createElement('div');
       div.className = 'bank-item';
       div.innerHTML = `
-        <div class="bank-dot" style="background:${b.color}"></div>
+        ${bankLogoHtml(b, 'bank-logo')}
         <span class="bank-name">${b.name}</span>
         <span class="bank-due">截止 ${dml} ${b.due} 日</span>
         <button class="bank-del" onclick="deleteBank('${b.id}')">×</button>`;
