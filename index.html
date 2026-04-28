@@ -1,0 +1,466 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
+<title>帳單追蹤</title>
+<meta name="theme-color" content="#ffffff">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="default">
+<meta name="apple-mobile-web-app-title" content="帳單追蹤">
+<style>
+  *{box-sizing:border-box;margin:0;padding:0;}
+  body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;background:#f5f5f5;color:#1a1a1a;min-height:100vh;}
+  .app{max-width:480px;margin:0 auto;padding:0 0 80px;}
+
+  /* Login screen */
+  #login-screen{display:flex;flex-direction:column;align-items:center;justify-content:center;min-height:100vh;padding:2rem;text-align:center;}
+  .login-icon{width:64px;height:64px;background:#1a1a1a;border-radius:16px;display:flex;align-items:center;justify-content:center;margin:0 auto 1.5rem;}
+  .login-icon svg{width:32px;height:32px;stroke:white;fill:none;}
+  #login-screen h1{font-size:24px;font-weight:600;margin-bottom:8px;}
+  #login-screen p{font-size:14px;color:#666;margin-bottom:2rem;line-height:1.6;}
+  .btn-google{display:flex;align-items:center;gap:10px;padding:12px 24px;background:white;border:1px solid #ddd;border-radius:12px;font-size:15px;font-weight:500;cursor:pointer;transition:all .15s;box-shadow:0 1px 3px rgba(0,0,0,.08);}
+  .btn-google:hover{box-shadow:0 2px 8px rgba(0,0,0,.12);}
+  .btn-google svg{width:20px;height:20px;}
+
+  /* Main app */
+  #main-screen{display:none;}
+  .topbar{background:white;padding:16px 16px 12px;border-bottom:1px solid #efefef;position:sticky;top:0;z-index:10;}
+  .topbar-row{display:flex;align-items:center;justify-content:space-between;}
+  .topbar h1{font-size:18px;font-weight:600;}
+  .user-info{display:flex;align-items:center;gap:8px;}
+  .avatar{width:30px;height:30px;border-radius:50%;object-fit:cover;}
+  .btn-signout{font-size:12px;color:#999;background:none;border:none;cursor:pointer;padding:4px 8px;}
+  .btn-signout:hover{color:#1a1a1a;}
+  .month-nav{display:flex;align-items:center;justify-content:space-between;padding:12px 0 4px;}
+  .month-nav button{width:30px;height:30px;border-radius:8px;border:1px solid #e8e8e8;background:transparent;cursor:pointer;font-size:16px;color:#1a1a1a;}
+  .month-lbl{font-size:15px;font-weight:500;}
+
+  .content{padding:16px;}
+
+  .stats{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:16px;}
+  .stat{background:white;border-radius:12px;padding:14px 16px;}
+  .stat-lbl{font-size:12px;color:#888;margin-bottom:4px;}
+  .stat-val{font-size:22px;font-weight:600;}
+  .stat-val.g{color:#0a8a5c;}.stat-val.r{color:#c0392b;}
+  .stat-sub{font-size:11px;color:#aaa;margin-top:2px;}
+
+  .tabs{display:flex;gap:6px;margin-bottom:16px;}
+  .tab{flex:1;padding:7px;border-radius:8px;border:1px solid #e8e8e8;background:white;font-size:13px;cursor:pointer;color:#888;transition:all .15s;}
+  .tab.on{background:#1a1a1a;color:white;border-color:#1a1a1a;}
+
+  .sec-lbl{font-size:11px;font-weight:600;color:#aaa;letter-spacing:.05em;text-transform:uppercase;margin-bottom:8px;}
+
+  .card-list{display:flex;flex-direction:column;gap:8px;margin-bottom:16px;}
+  .ci{background:white;border-radius:12px;border-left:3px solid #e8e8e8;padding:12px 14px;display:flex;align-items:center;gap:10px;}
+  .ci.paid{border-left-color:#0a8a5c;}.ci.unpaid{border-left-color:#c0392b;}.ci.overdue{border-left-color:#d4830a;background:#fffbf0;}
+  .avatar-card{width:34px;height:22px;border-radius:4px;flex-shrink:0;display:flex;align-items:center;justify-content:center;font-size:10px;font-weight:600;color:white;}
+  .ci-info{flex:1;min-width:0;}
+  .ci-name{font-size:14px;font-weight:500;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+  .ci-meta{font-size:11px;color:#aaa;margin-top:2px;}
+  .ci-amt{font-size:14px;font-weight:500;flex-shrink:0;}
+  .bdg{display:inline-block;font-size:10px;padding:1px 6px;border-radius:99px;font-weight:500;margin-left:4px;}
+  .bdg.paid{background:#e0f5ec;color:#0a8a5c;}.bdg.unpaid{background:#fde8e8;color:#c0392b;}.bdg.overdue{background:#fef3e0;color:#d4830a;}
+  .chk{width:28px;height:28px;border-radius:50%;border:1.5px solid #ddd;background:transparent;cursor:pointer;display:flex;align-items:center;justify-content:center;flex-shrink:0;transition:all .15s;}
+  .chk.on{background:#0a8a5c;border-color:#0a8a5c;}
+  .chk svg{width:13px;height:13px;}
+  .del-btn{width:22px;height:22px;border:none;background:transparent;cursor:pointer;color:#ccc;font-size:16px;flex-shrink:0;line-height:1;}
+  .del-btn:hover{color:#c0392b;}
+  .empty{text-align:center;padding:2.5rem 0;color:#bbb;font-size:14px;}
+
+  /* Add panel */
+  .panel{background:white;border-radius:16px;padding:18px;margin-bottom:12px;}
+  .panel h3{font-size:15px;font-weight:600;margin-bottom:14px;}
+  .ptabs{display:flex;gap:6px;margin-bottom:14px;}
+  .ptab{flex:1;padding:7px;border-radius:8px;border:1px solid #e8e8e8;font-size:12px;cursor:pointer;color:#888;background:white;transition:all .15s;}
+  .ptab.on{background:#f0f0f0;color:#1a1a1a;border-color:#ddd;}
+  .form-row{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:10px;}
+  .fg{display:flex;flex-direction:column;gap:4px;}
+  .fg label{font-size:12px;color:#888;}
+  .fg input{font-size:14px;height:36px;border-radius:8px;border:1px solid #e8e8e8;background:#fafafa;color:#1a1a1a;padding:0 10px;width:100%;outline:none;}
+  .fg input:focus{border-color:#aaa;background:white;}
+  .cdots{display:flex;gap:7px;flex-wrap:wrap;margin-top:5px;}
+  .cdot{width:22px;height:22px;border-radius:50%;cursor:pointer;border:2.5px solid transparent;transition:border-color .1s;}
+  .cdot.on{border-color:#1a1a1a;}
+  .btn-main{width:100%;margin-top:12px;padding:11px;font-size:14px;font-weight:600;border-radius:10px;background:#1a1a1a;color:white;border:none;cursor:pointer;transition:opacity .15s;}
+  .btn-main:hover{opacity:.85;}
+  .btn-main:disabled{opacity:.4;cursor:not-allowed;}
+
+  .upload-zone{border:1.5px dashed #ddd;border-radius:10px;padding:22px;text-align:center;cursor:pointer;transition:border-color .15s;margin-bottom:10px;}
+  .upload-zone:hover{border-color:#999;}
+  .upload-zone input{display:none;}
+  .upload-hint{font-size:13px;color:#888;margin-top:6px;}
+  .upload-sub{font-size:11px;color:#bbb;margin-top:2px;}
+  .tip{font-size:11px;color:#888;background:#f7f7f7;border-radius:8px;padding:8px 10px;margin-bottom:12px;line-height:1.6;}
+
+  .ai-result{background:#f7f7f7;border-radius:10px;padding:12px;margin-bottom:10px;}
+  .ai-row{display:flex;justify-content:space-between;padding:4px 0;border-bottom:1px solid #efefef;font-size:13px;}
+  .ai-row:last-child{border-bottom:none;}
+  .ai-lbl{color:#888;}
+
+  .loading-row{text-align:center;padding:1rem;font-size:13px;color:#888;}
+  .dot{display:inline-block;animation:ld 1.2s infinite;}
+  @keyframes ld{0%,80%,100%{opacity:.2;}40%{opacity:1;}}
+
+  .saving-toast{position:fixed;bottom:24px;left:50%;transform:translateX(-50%);background:#1a1a1a;color:white;padding:8px 16px;border-radius:99px;font-size:13px;opacity:0;transition:opacity .3s;pointer-events:none;z-index:999;}
+  .saving-toast.show{opacity:1;}
+</style>
+</head>
+<body>
+
+<!-- Login screen -->
+<div id="login-screen">
+  <div class="login-icon">
+    <svg viewBox="0 0 24 24" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+      <rect x="2" y="5" width="20" height="14" rx="2"/>
+      <line x1="2" y1="10" x2="22" y2="10"/>
+    </svg>
+  </div>
+  <h1>帳單追蹤</h1>
+  <p>登入後即可管理你的信用卡帳單<br>資料安全儲存在雲端，隨時隨地存取</p>
+  <button class="btn-google" id="btn-login">
+    <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+      <path d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z" fill="#4285F4"/>
+      <path d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z" fill="#34A853"/>
+      <path d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z" fill="#FBBC05"/>
+      <path d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z" fill="#EA4335"/>
+    </svg>
+    使用 Google 帳號登入
+  </button>
+</div>
+
+<!-- Main app -->
+<div id="main-screen">
+  <div class="topbar">
+    <div class="topbar-row">
+      <h1>帳單追蹤</h1>
+      <div class="user-info">
+        <img class="avatar" id="user-avatar" src="" alt="">
+        <button class="btn-signout" id="btn-signout">登出</button>
+      </div>
+    </div>
+    <div class="month-nav">
+      <button onclick="chMon(-1)">‹</button>
+      <span class="month-lbl" id="mon-lbl"></span>
+      <button onclick="chMon(1)">›</button>
+    </div>
+  </div>
+
+  <div class="content">
+    <div class="stats">
+      <div class="stat"><div class="stat-lbl">已繳</div><div class="stat-val g" id="s-paid">0 張</div><div class="stat-sub" id="s-paid-amt"></div></div>
+      <div class="stat"><div class="stat-lbl">未繳</div><div class="stat-val r" id="s-unpaid">0 張</div><div class="stat-sub" id="s-unpaid-amt"></div></div>
+    </div>
+
+    <div class="tabs">
+      <button class="tab on" onclick="setF('all',this)">全部</button>
+      <button class="tab" onclick="setF('unpaid',this)">未繳</button>
+      <button class="tab" onclick="setF('paid',this)">已繳</button>
+    </div>
+
+    <div class="sec-lbl">本月帳單</div>
+    <div class="card-list" id="card-list"></div>
+
+    <div class="panel">
+      <h3>新增信用卡</h3>
+      <div class="ptabs">
+        <button class="ptab on" onclick="setPTab('scan',this)">上傳帳單</button>
+        <button class="ptab" onclick="setPTab('manual',this)">手動輸入</button>
+      </div>
+
+      <div id="tab-scan">
+        <div class="tip">建議上傳前遮蔽帳單上的卡號、姓名等個資，只保留金額與截止日區域。</div>
+        <div class="upload-zone" onclick="document.getElementById('bill-file').click()">
+          <input type="file" id="bill-file" accept="image/*,application/pdf" onchange="handleUpload(event)">
+          <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="#aaa" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/>
+            <polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/>
+          </svg>
+          <div class="upload-hint" id="upload-hint">點擊上傳帳單截圖或 PDF</div>
+          <div class="upload-sub">支援 JPG / PNG / PDF</div>
+        </div>
+        <div id="scan-loading" style="display:none" class="loading-row">
+          AI 分析中<span class="dot" style="animation-delay:0s">．</span><span class="dot" style="animation-delay:.4s">．</span><span class="dot" style="animation-delay:.8s">．</span>
+        </div>
+        <div id="ai-result-area" style="display:none">
+          <div class="ai-result" id="ai-result-content"></div>
+          <button class="btn-main" onclick="addFromScan()">確認新增</button>
+        </div>
+      </div>
+
+      <div id="tab-manual" style="display:none">
+        <div class="form-row">
+          <div class="fg"><label>卡片名稱</label><input type="text" id="m-name" placeholder="如：玉山 Pi 卡"></div>
+          <div class="fg"><label>發卡銀行</label><input type="text" id="m-bank" placeholder="如：玉山銀行"></div>
+        </div>
+        <div class="form-row">
+          <div class="fg"><label>帳單金額 (NT$)</label><input type="number" id="m-amount" placeholder="0"></div>
+          <div class="fg"><label>截止日（每月幾號）</label><input type="number" id="m-due" placeholder="25" min="1" max="31"></div>
+        </div>
+        <div class="fg"><label>卡片顏色</label><div class="cdots" id="cdots"></div></div>
+        <button class="btn-main" id="btn-add-manual" onclick="addManual()">新增卡片</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="saving-toast" id="toast"></div>
+
+<!-- Firebase -->
+<script type="module">
+import { initializeApp } from 'https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js';
+import { getAuth, GoogleAuthProvider, signInWithPopup, signOut, onAuthStateChanged }
+  from 'https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js';
+import { getFirestore, doc, collection, getDocs, setDoc, deleteDoc, onSnapshot }
+  from 'https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js';
+
+const firebaseConfig = {
+  apiKey: "AIzaSyCVYbQRKBNSblX8q0tWbw7VnSZq0PNCbtU",
+  authDomain: "credit-bill-tracker.firebaseapp.com",
+  projectId: "credit-bill-tracker",
+  storageBucket: "credit-bill-tracker.firebasestorage.app",
+  messagingSenderId: "457819201693",
+  appId: "1:457819201693:web:9f8908c52870740fe8b474"
+};
+
+const app = initializeApp(firebaseConfig);
+const auth = getAuth(app);
+const db = getFirestore(app);
+
+let currentUser = null;
+let unsubscribe = null;
+
+window._db = db;
+window._getUser = () => currentUser;
+
+// Auth
+document.getElementById('btn-login').addEventListener('click', async () => {
+  try {
+    await signInWithPopup(auth, new GoogleAuthProvider());
+  } catch(e) { console.error(e); }
+});
+document.getElementById('btn-signout').addEventListener('click', () => signOut(auth));
+
+onAuthStateChanged(auth, async (user) => {
+  currentUser = user;
+  if (user) {
+    document.getElementById('login-screen').style.display = 'none';
+    document.getElementById('main-screen').style.display = 'block';
+    document.getElementById('user-avatar').src = user.photoURL || '';
+    loadFromFirestore(user.uid);
+  } else {
+    document.getElementById('login-screen').style.display = 'flex';
+    document.getElementById('main-screen').style.display = 'none';
+    if (unsubscribe) { unsubscribe(); unsubscribe = null; }
+    window._data = { cards: [], payments: {} };
+  }
+});
+
+async function loadFromFirestore(uid) {
+  if (unsubscribe) unsubscribe();
+  const userRef = doc(db, 'users', uid);
+  const cardsRef = collection(db, 'users', uid, 'cards');
+  const paymentsRef = collection(db, 'users', uid, 'payments');
+
+  const [cardsSnap, paymentsSnap] = await Promise.all([getDocs(cardsRef), getDocs(paymentsRef)]);
+  const cards = cardsSnap.docs.map(d => ({ id: d.id, ...d.data() }));
+  const payments = {};
+  paymentsSnap.docs.forEach(d => { payments[d.id] = d.data(); });
+  window._data = { cards, payments };
+  window.render();
+}
+
+window._saveCard = async (card) => {
+  const uid = window._getUser()?.uid; if (!uid) return;
+  await setDoc(doc(db, 'users', uid, 'cards', card.id), card);
+  showToast('已儲存');
+};
+window._deleteCard = async (id) => {
+  const uid = window._getUser()?.uid; if (!uid) return;
+  await deleteDoc(doc(db, 'users', uid, 'cards', id));
+  showToast('已刪除');
+};
+window._savePayment = async (monthKey, payments) => {
+  const uid = window._getUser()?.uid; if (!uid) return;
+  await setDoc(doc(db, 'users', uid, 'payments', monthKey), payments);
+};
+</script>
+
+<script>
+const COLORS=['#378ADD','#1D9E75','#D85A30','#D4537E','#7F77DD','#BA7517','#888780','#E24B4A'];
+let selColor=COLORS[0], scanData=null;
+let currentYear=new Date().getFullYear(), currentMonth=new Date().getMonth(), filter='all';
+
+window._data = { cards: [], payments: {} };
+
+const cdotsEl = document.getElementById('cdots');
+COLORS.forEach(c => {
+  const d = document.createElement('div');
+  d.className = 'cdot' + (c===selColor?' on':'');
+  d.style.background = c;
+  d.onclick = () => { selColor=c; document.querySelectorAll('.cdot').forEach(x=>x.classList.remove('on')); d.classList.add('on'); };
+  cdotsEl.appendChild(d);
+});
+
+function mk(y,m){ return `${y}-${String(m+1).padStart(2,'0')}`; }
+
+function getStatus(card) {
+  const paid = window._data.payments[mk(currentYear,currentMonth)]?.[card.id];
+  if (paid) return 'paid';
+  const today=new Date(), due=new Date(currentYear,currentMonth,card.due);
+  if (currentYear===today.getFullYear() && currentMonth===today.getMonth() && today>due) return 'overdue';
+  return 'unpaid';
+}
+
+async function togglePay(id) {
+  const k = mk(currentYear, currentMonth);
+  if (!window._data.payments[k]) window._data.payments[k] = {};
+  window._data.payments[k][id] = !window._data.payments[k][id];
+  if (!window._data.payments[k][id]) delete window._data.payments[k][id];
+  render();
+  await window._savePayment(k, window._data.payments[k]);
+}
+
+async function deleteCard(id) {
+  window._data.cards = window._data.cards.filter(c => c.id !== id);
+  render();
+  await window._deleteCard(id);
+}
+window.deleteCard = deleteCard;
+window.togglePay = togglePay;
+
+function setPTab(t, btn) {
+  ['scan','manual'].forEach(x => { document.getElementById('tab-'+x).style.display = x===t?'':'none'; });
+  document.querySelectorAll('.ptab').forEach(x=>x.classList.remove('on'));
+  btn.classList.add('on');
+}
+window.setPTab = setPTab;
+
+async function addManual() {
+  const name = document.getElementById('m-name').value.trim();
+  if (!name) { document.getElementById('m-name').focus(); return; }
+  const btn = document.getElementById('btn-add-manual');
+  btn.disabled = true;
+  const card = {
+    id: Date.now().toString(),
+    name,
+    bank: document.getElementById('m-bank').value.trim(),
+    amount: parseInt(document.getElementById('m-amount').value)||0,
+    due: parseInt(document.getElementById('m-due').value)||25,
+    color: selColor
+  };
+  window._data.cards.push(card);
+  render();
+  await window._saveCard(card);
+  ['m-name','m-bank','m-amount','m-due'].forEach(id => document.getElementById(id).value='');
+  btn.disabled = false;
+}
+window.addManual = addManual;
+
+async function addFromScan() {
+  if (!scanData) return;
+  const card = { id: Date.now().toString(), ...scanData };
+  window._data.cards.push(card);
+  render();
+  await window._saveCard(card);
+  scanData = null;
+  document.getElementById('ai-result-area').style.display='none';
+  document.getElementById('bill-file').value='';
+  document.getElementById('upload-hint').textContent='點擊上傳帳單截圖或 PDF';
+}
+window.addFromScan = addFromScan;
+
+async function handleUpload(e) {
+  const file = e.target.files[0]; if (!file) return;
+  document.getElementById('upload-hint').textContent = file.name;
+  document.getElementById('scan-loading').style.display='block';
+  document.getElementById('ai-result-area').style.display='none';
+  const b64 = await new Promise((res,rej)=>{ const r=new FileReader(); r.onload=()=>res(r.result.split(',')[1]); r.onerror=rej; r.readAsDataURL(file); });
+  const isImg = file.type.startsWith('image/');
+  try {
+    const resp = await fetch('https://api.anthropic.com/v1/messages',{
+      method:'POST',
+      headers:{'Content-Type':'application/json'},
+      body:JSON.stringify({
+        model:'claude-sonnet-4-20250514', max_tokens:500,
+        messages:[{role:'user',content:[
+          isImg?{type:'image',source:{type:'base64',media_type:file.type,data:b64}}:{type:'document',source:{type:'base64',media_type:'application/pdf',data:b64}},
+          {type:'text',text:'這是一張信用卡帳單，請從中找出以下資訊並只回傳 JSON，不要任何說明文字或 markdown：{"name":"卡片名稱（銀行＋卡名）","bank":"發卡銀行","amount":帳單金額數字不含逗號,"due":繳款截止日是幾號只要數字1到31}。若找不到某欄位就填空字串或0。'}
+        ]}]
+      })
+    });
+    const d = await resp.json();
+    const text = d.content?.map(x=>x.text||'').join('');
+    const parsed = JSON.parse(text.replace(/```json|```/g,'').trim());
+    scanData = {name:parsed.name||'信用卡',bank:parsed.bank||'',amount:parseInt(parsed.amount)||0,due:parseInt(parsed.due)||25,color:COLORS[Math.floor(Math.random()*COLORS.length)]};
+    document.getElementById('ai-result-content').innerHTML=`
+      <div class="ai-row"><span class="ai-lbl">卡片名稱</span><span>${scanData.name}</span></div>
+      <div class="ai-row"><span class="ai-lbl">發卡銀行</span><span>${scanData.bank||'—'}</span></div>
+      <div class="ai-row"><span class="ai-lbl">帳單金額</span><span>NT$ ${scanData.amount.toLocaleString()}</span></div>
+      <div class="ai-row"><span class="ai-lbl">繳費截止日</span><span>每月 ${scanData.due} 日</span></div>`;
+    document.getElementById('ai-result-area').style.display='block';
+  } catch(err) {
+    document.getElementById('ai-result-content').innerHTML='<div style="color:#c0392b;font-size:13px;">辨識失敗，請改用手動輸入</div>';
+    document.getElementById('ai-result-area').style.display='block';
+  }
+  document.getElementById('scan-loading').style.display='none';
+}
+window.handleUpload = handleUpload;
+
+function chMon(d) {
+  currentMonth+=d;
+  if(currentMonth>11){currentMonth=0;currentYear++;}
+  if(currentMonth<0){currentMonth=11;currentYear--;}
+  render();
+}
+window.chMon = chMon;
+
+function setF(f,btn){filter=f;document.querySelectorAll('.tab').forEach(t=>t.classList.remove('on'));btn.classList.add('on');render();}
+window.setF = setF;
+
+function showToast(msg) {
+  const t = document.getElementById('toast');
+  t.textContent = msg; t.classList.add('show');
+  setTimeout(()=>t.classList.remove('show'), 1800);
+}
+window.showToast = showToast;
+
+window.render = function() {
+  const MONS=['1月','2月','3月','4月','5月','6月','7月','8月','9月','10月','11月','12月'];
+  document.getElementById('mon-lbl').textContent=`${currentYear} 年 ${MONS[currentMonth]}`;
+  let pN=0,uN=0,pA=0,uA=0;
+  window._data.cards.forEach(c=>{const s=getStatus(c);if(s==='paid'){pN++;pA+=c.amount;}else{uN++;uA+=c.amount;}});
+  document.getElementById('s-paid').textContent=pN+' 張';
+  document.getElementById('s-unpaid').textContent=uN+' 張';
+  document.getElementById('s-paid-amt').textContent=pA>0?'NT$ '+pA.toLocaleString():'';
+  document.getElementById('s-unpaid-amt').textContent=uA>0?'NT$ '+uA.toLocaleString():'';
+  const list=document.getElementById('card-list');
+  list.innerHTML='';
+  let cards=[...window._data.cards];
+  if(filter==='paid') cards=cards.filter(c=>getStatus(c)==='paid');
+  if(filter==='unpaid') cards=cards.filter(c=>getStatus(c)!=='paid');
+  if(!cards.length){list.innerHTML='<div class="empty">'+(window._data.cards.length===0?'請先從下方新增信用卡':'此篩選無符合帳單')+'</div>';return;}
+  const order={overdue:0,unpaid:1,paid:2};
+  cards.sort((a,b)=>(order[getStatus(a)]||1)-(order[getStatus(b)]||1)||a.due-b.due);
+  cards.forEach(card=>{
+    const s=getStatus(card), paid=s==='paid';
+    const bdgMap={paid:'<span class="bdg paid">已繳</span>',overdue:'<span class="bdg overdue">逾期</span>',unpaid:'<span class="bdg unpaid">未繳</span>'};
+    const div=document.createElement('div');
+    div.className='ci '+s;
+    div.innerHTML=`
+      <div class="avatar-card" style="background:${card.color}">${(card.bank||card.name)[0]}</div>
+      <div class="ci-info">
+        <div class="ci-name">${card.name}${bdgMap[s]}</div>
+        <div class="ci-meta">截止：每月 ${card.due} 日${card.bank?' · '+card.bank:''}</div>
+      </div>
+      <span class="ci-amt">${card.amount>0?'NT$ '+card.amount.toLocaleString():'—'}</span>
+      <button class="chk${paid?' on':''}" onclick="togglePay('${card.id}')">
+        <svg viewBox="0 0 13 13" fill="none" stroke="${paid?'white':'#ccc'}" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><polyline points="2,7 5.5,10.5 11,3"/></svg>
+      </button>
+      <button class="del-btn" onclick="deleteCard('${card.id}')">×</button>`;
+    list.appendChild(div);
+  });
+};
+</script>
+</body>
+</html>
