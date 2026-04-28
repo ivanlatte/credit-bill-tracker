@@ -48,7 +48,7 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;backgrou
 .bill-list{display:flex;flex-direction:column;gap:8px;margin-bottom:16px;}
 .bi{background:white;border-radius:12px;border-left:3px solid #e8e8e8;padding:12px 14px;display:flex;align-items:center;gap:10px;}
 .bi.paid{border-left-color:#0a8a5c;}.bi.unpaid{border-left-color:#c0392b;}.bi.overdue{border-left-color:#d4830a;background:#fffbf0;}
-.bi-logo{width:24px;height:24px;border-radius:6px;flex-shrink:0;object-fit:contain;background:#f0f0f0;padding:2px;}
+.bi-logo{width:36px;height:24px;border-radius:5px;flex-shrink:0;display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:700;color:white;letter-spacing:-.3px;}
 .bi-info{flex:1;min-width:0;}
 .bi-name{font-size:14px;font-weight:500;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
 .bi-meta{font-size:11px;color:#aaa;margin-top:2px;}
@@ -77,7 +77,7 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;backgrou
 
 .bank-list{display:flex;flex-direction:column;gap:6px;margin-bottom:12px;}
 .bank-item{display:flex;align-items:center;gap:10px;padding:10px 12px;background:#fafafa;border-radius:8px;border:1px solid #efefef;}
-.bank-logo{width:22px;height:22px;border-radius:5px;object-fit:contain;background:#f0f0f0;padding:2px;flex-shrink:0;}
+.bank-logo{width:32px;height:22px;border-radius:4px;flex-shrink:0;display:flex;align-items:center;justify-content:center;font-size:10px;font-weight:700;color:white;letter-spacing:-.3px;}
 .bank-name{flex:1;font-size:13px;font-weight:500;}
 .bank-due{font-size:12px;color:#aaa;white-space:nowrap;}
 .bank-del{border:none;background:transparent;color:#ccc;cursor:pointer;font-size:16px;line-height:1;}
@@ -262,55 +262,47 @@ window._savePayments = async (monthKey, obj) => {
 let currentYear = new Date().getFullYear(), currentMonth = new Date().getMonth(), filter = 'all';
 window._data = { banks: [], bills: {}, payments: {} };
 
-// Bank domain lookup for favicon
-const BANK_DOMAINS = {
-  '國泰世華': 'cathaybk.com.tw',
-  '國泰': 'cathaybk.com.tw',
-  '玉山': 'esunbank.com.tw',
-  '中信': 'ctbcbank.com',
-  '中國信託': 'ctbcbank.com',
-  '富邦': 'fubon.com',
-  '台北富邦': 'fubon.com',
-  '台新': 'taishinbank.com.tw',
-  '永豐': 'sinopac.com',
-  '第一銀行': 'firstbank.com.tw',
-  '第一': 'firstbank.com.tw',
-  '台灣銀行': 'bot.com.tw',
-  '台銀': 'bot.com.tw',
-  '合庫': 'tcb-bank.com.tw',
-  '合作金庫': 'tcb-bank.com.tw',
-  '兆豐': 'megabank.com.tw',
-  '彰化銀行': 'bankchb.com.tw',
-  '彰銀': 'bankchb.com.tw',
-  '華南': 'hncb.com.tw',
-  '遠東': 'feib.com.tw',
-  '滙豐': 'hsbc.com.tw',
-  'HSBC': 'hsbc.com.tw',
-  '星展': 'dbs.com.tw',
-  'DBS': 'dbs.com.tw',
-  '花旗': 'citibank.com.tw',
-  '聯邦': 'ubot.com.tw',
-  '凱基': 'kgibank.com',
-  '安泰': 'entiebank.com.tw',
-  '上海商銀': 'scsb.com.tw',
-  '京城': 'kccb.com.tw',
-  '台中銀': 'bancotaiwan.com.tw',
-  '大眾': 'tcbbank.com.tw',
+// Bank brand colours
+const BANK_COLORS = {
+  '國泰世華': '#005BAB', '國泰': '#005BAB',
+  '玉山': '#007A4D', 
+  '中信': '#D71920', '中國信託': '#D71920',
+  '富邦': '#FF6600', '台北富邦': '#FF6600',
+  '台新': '#E8002D',
+  '永豐': '#0072BC',
+  '第一銀行': '#005A32', '第一': '#005A32',
+  '台灣銀行': '#004B9B', '台銀': '#004B9B',
+  '合庫': '#006341', '合作金庫': '#006341',
+  '兆豐': '#003087',
+  '彰化銀行': '#C8102E', '彰銀': '#C8102E',
+  '華南': '#00703C',
+  '遠東': '#0066CC',
+  '滙豐': '#DB0011', 'HSBC': '#DB0011',
+  '星展': '#DA1710', 'DBS': '#DA1710',
+  '花旗': '#003B8E',
+  '聯邦': '#0066B3',
+  '凱基': '#00843D',
+  '安泰': '#0071B9',
+  '上海商銀': '#C41230',
+  '京城': '#004A97',
+  '大眾': '#0065A4',
 };
 
-function faviconUrl(bankName) {
-  let domain = null;
-  for (const [key, val] of Object.entries(BANK_DOMAINS)) {
-    if (bankName.includes(key) || key.includes(bankName)) { domain = val; break; }
+function bankBrandColor(name) {
+  for (const [key, color] of Object.entries(BANK_COLORS)) {
+    if (name.includes(key) || key.includes(name)) return color;
   }
-  if (!domain) return null;
-  return `https://www.google.com/s2/favicons?domain=${domain}&sz=64`;
+  // Generate a consistent colour from name if no match
+  let hash = 0;
+  for (let i = 0; i < name.length; i++) hash = name.charCodeAt(i) + ((hash << 5) - hash);
+  const hue = Math.abs(hash) % 360;
+  return `hsl(${hue},55%,38%)`;
 }
 
 function bankLogoHtml(bank, cls) {
-  const url = faviconUrl(bank.name);
-  if (url) return `<img class="${cls}" src="${url}" alt="${bank.name}" onerror="this.style.display='none';this.nextElementSibling.style.display='flex'"><span class="${cls}" style="display:none;background:#e8e8e8;color:#888;font-size:10px;font-weight:600;align-items:center;justify-content:center;">${bank.name[0]}</span>`;
-  return `<span class="${cls}" style="background:#e8e8e8;color:#888;font-size:10px;font-weight:600;display:flex;align-items:center;justify-content:center;">${bank.name[0]}</span>`;
+  const color = bankBrandColor(bank.name);
+  const label = bank.name.length <= 2 ? bank.name : bank.name.slice(0, 2);
+  return `<span class="${cls}" style="background:${color};">${label}</span>`;
 }
 
 function mk(y, m) { return `${y}-${String(m+1).padStart(2,'0')}`; }
