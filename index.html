@@ -9,117 +9,115 @@
 <meta name="apple-mobile-web-app-status-bar-style" content="default">
 <meta name="apple-mobile-web-app-title" content="帳單追蹤">
 <style>
-  *{box-sizing:border-box;margin:0;padding:0;}
-  body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;background:#f5f5f5;color:#1a1a1a;min-height:100vh;}
-  .app{max-width:480px;margin:0 auto;padding:0 0 80px;}
+*{box-sizing:border-box;margin:0;padding:0;}
+body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;background:#f5f5f5;color:#1a1a1a;min-height:100vh;}
 
-  /* Login screen */
-  #login-screen{display:flex;flex-direction:column;align-items:center;justify-content:center;min-height:100vh;padding:2rem;text-align:center;}
-  .login-icon{width:64px;height:64px;background:#1a1a1a;border-radius:16px;display:flex;align-items:center;justify-content:center;margin:0 auto 1.5rem;}
-  .login-icon svg{width:32px;height:32px;stroke:white;fill:none;}
-  #login-screen h1{font-size:24px;font-weight:600;margin-bottom:8px;}
-  #login-screen p{font-size:14px;color:#666;margin-bottom:2rem;line-height:1.6;}
-  .btn-google{display:flex;align-items:center;gap:10px;padding:12px 24px;background:white;border:1px solid #ddd;border-radius:12px;font-size:15px;font-weight:500;cursor:pointer;transition:all .15s;box-shadow:0 1px 3px rgba(0,0,0,.08);}
-  .btn-google:hover{box-shadow:0 2px 8px rgba(0,0,0,.12);}
-  .btn-google svg{width:20px;height:20px;}
+#login-screen{display:flex;flex-direction:column;align-items:center;justify-content:center;min-height:100vh;padding:2rem;text-align:center;}
+.login-icon{width:64px;height:64px;background:#1a1a1a;border-radius:16px;display:flex;align-items:center;justify-content:center;margin:0 auto 1.5rem;}
+.login-icon svg{width:32px;height:32px;stroke:white;fill:none;}
+#login-screen h1{font-size:24px;font-weight:600;margin-bottom:8px;}
+#login-screen p{font-size:14px;color:#666;margin-bottom:2rem;line-height:1.6;}
+.btn-google{display:flex;align-items:center;gap:10px;padding:12px 24px;background:white;border:1px solid #ddd;border-radius:12px;font-size:15px;font-weight:500;cursor:pointer;box-shadow:0 1px 3px rgba(0,0,0,.08);}
+.btn-google svg{width:20px;height:20px;}
 
-  /* Main app */
-  #main-screen{display:none;}
-  .topbar{background:white;padding:16px 16px 12px;border-bottom:1px solid #efefef;position:sticky;top:0;z-index:10;}
-  .topbar-row{display:flex;align-items:center;justify-content:space-between;}
-  .topbar h1{font-size:18px;font-weight:600;}
-  .user-info{display:flex;align-items:center;gap:8px;}
-  .avatar{width:30px;height:30px;border-radius:50%;object-fit:cover;}
-  .btn-signout{font-size:12px;color:#999;background:none;border:none;cursor:pointer;padding:4px 8px;}
-  .btn-signout:hover{color:#1a1a1a;}
-  .month-nav{display:flex;align-items:center;justify-content:space-between;padding:12px 0 4px;}
-  .month-nav button{width:30px;height:30px;border-radius:8px;border:1px solid #e8e8e8;background:transparent;cursor:pointer;font-size:16px;color:#1a1a1a;}
-  .month-lbl{font-size:15px;font-weight:500;}
+#main-screen{display:none;max-width:480px;margin:0 auto;padding-bottom:80px;}
+.topbar{background:white;padding:16px 16px 12px;border-bottom:1px solid #efefef;position:sticky;top:0;z-index:10;}
+.topbar-row{display:flex;align-items:center;justify-content:space-between;}
+.topbar h1{font-size:18px;font-weight:600;}
+.user-info{display:flex;align-items:center;gap:8px;}
+.uavatar{width:30px;height:30px;border-radius:50%;object-fit:cover;}
+.btn-signout{font-size:12px;color:#999;background:none;border:none;cursor:pointer;padding:4px 8px;}
+.month-nav{display:flex;align-items:center;justify-content:space-between;padding:12px 0 4px;}
+.month-nav button{width:30px;height:30px;border-radius:8px;border:1px solid #e8e8e8;background:transparent;cursor:pointer;font-size:16px;color:#1a1a1a;}
+.month-lbl{font-size:15px;font-weight:500;}
 
-  .content{padding:16px;}
+.content{padding:16px;}
+.stats{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:16px;}
+.stat{background:white;border-radius:12px;padding:14px 16px;}
+.stat-lbl{font-size:12px;color:#888;margin-bottom:4px;}
+.stat-val{font-size:22px;font-weight:600;}
+.stat-val.g{color:#0a8a5c;}.stat-val.r{color:#c0392b;}
+.stat-sub{font-size:11px;color:#aaa;margin-top:2px;}
 
-  .stats{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:16px;}
-  .stat{background:white;border-radius:12px;padding:14px 16px;}
-  .stat-lbl{font-size:12px;color:#888;margin-bottom:4px;}
-  .stat-val{font-size:22px;font-weight:600;}
-  .stat-val.g{color:#0a8a5c;}.stat-val.r{color:#c0392b;}
-  .stat-sub{font-size:11px;color:#aaa;margin-top:2px;}
+.tabs{display:flex;gap:6px;margin-bottom:16px;}
+.tab{flex:1;padding:7px;border-radius:8px;border:1px solid #e8e8e8;background:white;font-size:13px;cursor:pointer;color:#888;transition:all .15s;}
+.tab.on{background:#1a1a1a;color:white;border-color:#1a1a1a;}
 
-  .tabs{display:flex;gap:6px;margin-bottom:16px;}
-  .tab{flex:1;padding:7px;border-radius:8px;border:1px solid #e8e8e8;background:white;font-size:13px;cursor:pointer;color:#888;transition:all .15s;}
-  .tab.on{background:#1a1a1a;color:white;border-color:#1a1a1a;}
+.sec-lbl{font-size:11px;font-weight:600;color:#aaa;letter-spacing:.05em;text-transform:uppercase;margin-bottom:8px;}
 
-  .sec-lbl{font-size:11px;font-weight:600;color:#aaa;letter-spacing:.05em;text-transform:uppercase;margin-bottom:8px;}
+.bill-list{display:flex;flex-direction:column;gap:8px;margin-bottom:16px;}
+.bi{background:white;border-radius:12px;border-left:3px solid #e8e8e8;padding:12px 14px;display:flex;align-items:center;gap:10px;}
+.bi.paid{border-left-color:#0a8a5c;}.bi.unpaid{border-left-color:#c0392b;}.bi.overdue{border-left-color:#d4830a;background:#fffbf0;}
+.bi-dot{width:34px;height:22px;border-radius:4px;flex-shrink:0;display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:600;color:white;}
+.bi-info{flex:1;min-width:0;}
+.bi-name{font-size:14px;font-weight:500;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+.bi-meta{font-size:11px;color:#aaa;margin-top:2px;}
+.bi-amt{font-size:14px;font-weight:500;flex-shrink:0;}
+.bdg{display:inline-block;font-size:10px;padding:1px 6px;border-radius:99px;font-weight:500;margin-left:4px;}
+.bdg.paid{background:#e0f5ec;color:#0a8a5c;}.bdg.unpaid{background:#fde8e8;color:#c0392b;}.bdg.overdue{background:#fef3e0;color:#d4830a;}
+.chk{width:28px;height:28px;border-radius:50%;border:1.5px solid #ddd;background:transparent;cursor:pointer;display:flex;align-items:center;justify-content:center;flex-shrink:0;transition:all .15s;}
+.chk.on{background:#0a8a5c;border-color:#0a8a5c;}
+.chk svg{width:13px;height:13px;}
+.del-btn{width:22px;height:22px;border:none;background:transparent;cursor:pointer;color:#ccc;font-size:16px;flex-shrink:0;line-height:1;}
+.del-btn:hover{color:#c0392b;}
+.empty{text-align:center;padding:2.5rem 0;color:#bbb;font-size:14px;}
 
-  .card-list{display:flex;flex-direction:column;gap:8px;margin-bottom:16px;}
-  .ci{background:white;border-radius:12px;border-left:3px solid #e8e8e8;padding:12px 14px;display:flex;align-items:center;gap:10px;}
-  .ci.paid{border-left-color:#0a8a5c;}.ci.unpaid{border-left-color:#c0392b;}.ci.overdue{border-left-color:#d4830a;background:#fffbf0;}
-  .avatar-card{width:34px;height:22px;border-radius:4px;flex-shrink:0;display:flex;align-items:center;justify-content:center;font-size:10px;font-weight:600;color:white;}
-  .ci-info{flex:1;min-width:0;}
-  .ci-name{font-size:14px;font-weight:500;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
-  .ci-meta{font-size:11px;color:#aaa;margin-top:2px;}
-  .ci-amt{font-size:14px;font-weight:500;flex-shrink:0;}
-  .bdg{display:inline-block;font-size:10px;padding:1px 6px;border-radius:99px;font-weight:500;margin-left:4px;}
-  .bdg.paid{background:#e0f5ec;color:#0a8a5c;}.bdg.unpaid{background:#fde8e8;color:#c0392b;}.bdg.overdue{background:#fef3e0;color:#d4830a;}
-  .chk{width:28px;height:28px;border-radius:50%;border:1.5px solid #ddd;background:transparent;cursor:pointer;display:flex;align-items:center;justify-content:center;flex-shrink:0;transition:all .15s;}
-  .chk.on{background:#0a8a5c;border-color:#0a8a5c;}
-  .chk svg{width:13px;height:13px;}
-  .del-btn{width:22px;height:22px;border:none;background:transparent;cursor:pointer;color:#ccc;font-size:16px;flex-shrink:0;line-height:1;}
-  .del-btn:hover{color:#c0392b;}
-  .empty{text-align:center;padding:2.5rem 0;color:#bbb;font-size:14px;}
+.panel{background:white;border-radius:16px;padding:18px;margin-bottom:12px;}
+.panel h3{font-size:15px;font-weight:600;margin-bottom:14px;}
+.ptabs{display:flex;gap:6px;margin-bottom:14px;}
+.ptab{flex:1;padding:7px;border-radius:8px;border:1px solid #e8e8e8;font-size:12px;cursor:pointer;color:#888;background:white;transition:all .15s;}
+.ptab.on{background:#f0f0f0;color:#1a1a1a;border-color:#ddd;}
 
-  /* Add panel */
-  .panel{background:white;border-radius:16px;padding:18px;margin-bottom:12px;}
-  .panel h3{font-size:15px;font-weight:600;margin-bottom:14px;}
-  .ptabs{display:flex;gap:6px;margin-bottom:14px;}
-  .ptab{flex:1;padding:7px;border-radius:8px;border:1px solid #e8e8e8;font-size:12px;cursor:pointer;color:#888;background:white;transition:all .15s;}
-  .ptab.on{background:#f0f0f0;color:#1a1a1a;border-color:#ddd;}
-  .form-row{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:10px;}
-  .fg{display:flex;flex-direction:column;gap:4px;}
-  .fg label{font-size:12px;color:#888;}
-  .fg input{font-size:14px;height:36px;border-radius:8px;border:1px solid #e8e8e8;background:#fafafa;color:#1a1a1a;padding:0 10px;width:100%;outline:none;}
-  .fg input:focus{border-color:#aaa;background:white;}
-  .cdots{display:flex;gap:7px;flex-wrap:wrap;margin-top:5px;}
-  .cdot{width:22px;height:22px;border-radius:50%;cursor:pointer;border:2.5px solid transparent;transition:border-color .1s;}
-  .cdot.on{border-color:#1a1a1a;}
-  .btn-main{width:100%;margin-top:12px;padding:11px;font-size:14px;font-weight:600;border-radius:10px;background:#1a1a1a;color:white;border:none;cursor:pointer;transition:opacity .15s;}
-  .btn-main:hover{opacity:.85;}
-  .btn-main:disabled{opacity:.4;cursor:not-allowed;}
+.fg{display:flex;flex-direction:column;gap:4px;margin-bottom:10px;}
+.fg label{font-size:12px;color:#888;}
+.fg input,.fg select{font-size:14px;height:38px;border-radius:8px;border:1px solid #e8e8e8;background:#fafafa;color:#1a1a1a;padding:0 10px;width:100%;outline:none;}
+.fg input:focus,.fg select:focus{border-color:#aaa;background:white;}
+.fg-row{display:grid;grid-template-columns:1fr 1fr;gap:8px;}
 
-  .upload-zone{border:1.5px dashed #ddd;border-radius:10px;padding:22px;text-align:center;cursor:pointer;transition:border-color .15s;margin-bottom:10px;}
-  .upload-zone:hover{border-color:#999;}
-  .upload-zone input{display:none;}
-  .upload-hint{font-size:13px;color:#888;margin-top:6px;}
-  .upload-sub{font-size:11px;color:#bbb;margin-top:2px;}
-  .tip{font-size:11px;color:#888;background:#f7f7f7;border-radius:8px;padding:8px 10px;margin-bottom:12px;line-height:1.6;}
+.cdots{display:flex;gap:7px;flex-wrap:wrap;margin-top:5px;}
+.cdot{width:22px;height:22px;border-radius:50%;cursor:pointer;border:2.5px solid transparent;}
+.cdot.on{border-color:#1a1a1a;}
 
-  .ai-result{background:#f7f7f7;border-radius:10px;padding:12px;margin-bottom:10px;}
-  .ai-row{display:flex;justify-content:space-between;padding:4px 0;border-bottom:1px solid #efefef;font-size:13px;}
-  .ai-row:last-child{border-bottom:none;}
-  .ai-lbl{color:#888;}
+.btn-main{width:100%;margin-top:4px;padding:11px;font-size:14px;font-weight:600;border-radius:10px;background:#1a1a1a;color:white;border:none;cursor:pointer;}
+.btn-main:disabled{opacity:.4;cursor:not-allowed;}
 
-  .loading-row{text-align:center;padding:1rem;font-size:13px;color:#888;}
-  .dot{display:inline-block;animation:ld 1.2s infinite;}
-  @keyframes ld{0%,80%,100%{opacity:.2;}40%{opacity:1;}}
+.upload-zone{border:1.5px dashed #ddd;border-radius:10px;padding:22px;text-align:center;cursor:pointer;margin-bottom:10px;}
+.upload-zone input{display:none;}
+.upload-hint{font-size:13px;color:#888;margin-top:6px;}
+.upload-sub{font-size:11px;color:#bbb;margin-top:2px;}
+.tip{font-size:11px;color:#888;background:#f7f7f7;border-radius:8px;padding:8px 10px;margin-bottom:12px;line-height:1.6;}
+.ai-result{background:#f7f7f7;border-radius:10px;padding:12px;margin-bottom:10px;}
+.ai-row{display:flex;justify-content:space-between;padding:4px 0;border-bottom:1px solid #efefef;font-size:13px;}
+.ai-row:last-child{border-bottom:none;}
+.ai-lbl{color:#888;}
+.loading-row{text-align:center;padding:1rem;font-size:13px;color:#888;}
+.dot{display:inline-block;animation:ld 1.2s infinite;}
+@keyframes ld{0%,80%,100%{opacity:.2;}40%{opacity:1;}}
 
-  .saving-toast{position:fixed;bottom:24px;left:50%;transform:translateX(-50%);background:#1a1a1a;color:white;padding:8px 16px;border-radius:99px;font-size:13px;opacity:0;transition:opacity .3s;pointer-events:none;z-index:999;}
-  .saving-toast.show{opacity:1;}
+.bank-list{display:flex;flex-direction:column;gap:6px;margin-bottom:12px;}
+.bank-item{display:flex;align-items:center;gap:10px;padding:10px 12px;background:#fafafa;border-radius:8px;border:1px solid #efefef;}
+.bank-dot{width:28px;height:18px;border-radius:3px;flex-shrink:0;}
+.bank-name{flex:1;font-size:13px;font-weight:500;}
+.bank-due{font-size:12px;color:#aaa;white-space:nowrap;}
+.bank-del{border:none;background:transparent;color:#ccc;cursor:pointer;font-size:16px;line-height:1;}
+.bank-del:hover{color:#c0392b;}
+
+.saving-toast{position:fixed;bottom:24px;left:50%;transform:translateX(-50%);background:#1a1a1a;color:white;padding:8px 16px;border-radius:99px;font-size:13px;opacity:0;transition:opacity .3s;pointer-events:none;z-index:999;}
+.saving-toast.show{opacity:1;}
 </style>
 </head>
 <body>
 
-<!-- Login screen -->
 <div id="login-screen">
   <div class="login-icon">
     <svg viewBox="0 0 24 24" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
-      <rect x="2" y="5" width="20" height="14" rx="2"/>
-      <line x1="2" y1="10" x2="22" y2="10"/>
+      <rect x="2" y="5" width="20" height="14" rx="2"/><line x1="2" y1="10" x2="22" y2="10"/>
     </svg>
   </div>
   <h1>帳單追蹤</h1>
   <p>登入後即可管理你的信用卡帳單<br>資料安全儲存在雲端，隨時隨地存取</p>
   <button class="btn-google" id="btn-login">
-    <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+    <svg viewBox="0 0 24 24">
       <path d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z" fill="#4285F4"/>
       <path d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z" fill="#34A853"/>
       <path d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z" fill="#FBBC05"/>
@@ -129,13 +127,12 @@
   </button>
 </div>
 
-<!-- Main app -->
 <div id="main-screen">
   <div class="topbar">
     <div class="topbar-row">
       <h1>帳單追蹤</h1>
       <div class="user-info">
-        <img class="avatar" id="user-avatar" src="" alt="">
+        <img class="uavatar" id="user-avatar" src="" alt="">
         <button class="btn-signout" id="btn-signout">登出</button>
       </div>
     </div>
@@ -159,17 +156,33 @@
     </div>
 
     <div class="sec-lbl">本月帳單</div>
-    <div class="card-list" id="card-list"></div>
+    <div class="bill-list" id="bill-list"></div>
 
+    <!-- 新增本月帳單 -->
     <div class="panel">
-      <h3>新增信用卡</h3>
+      <h3>新增本月帳單</h3>
       <div class="ptabs">
-        <button class="ptab on" onclick="setPTab('scan',this)">上傳帳單</button>
-        <button class="ptab" onclick="setPTab('manual',this)">手動輸入</button>
+        <button class="ptab on" onclick="setPTab('quick',this)">快速新增</button>
+        <button class="ptab" onclick="setPTab('scan',this)">上傳帳單</button>
       </div>
 
-      <div id="tab-scan">
-        <div class="tip">建議上傳前遮蔽帳單上的卡號、姓名等個資，只保留金額與截止日區域。</div>
+      <div id="tab-quick">
+        <div id="no-banks-hint" style="display:none;text-align:center;padding:.5rem 0 1rem;font-size:13px;color:#aaa;">請先至下方「管理銀行」新增銀行</div>
+        <div id="quick-form">
+          <div class="fg">
+            <label>選擇銀行</label>
+            <select id="q-bank-id"></select>
+          </div>
+          <div class="fg">
+            <label>本期帳單金額 (NT$)</label>
+            <input type="number" id="q-amount" placeholder="0">
+          </div>
+          <button class="btn-main" id="btn-quick-add" onclick="addBill()">新增</button>
+        </div>
+      </div>
+
+      <div id="tab-scan" style="display:none;">
+        <div class="tip">建議上傳前遮蔽卡號、姓名等個資，只保留金額與截止日區域。</div>
         <div class="upload-zone" onclick="document.getElementById('bill-file').click()">
           <input type="file" id="bill-file" accept="image/*,application/pdf" onchange="handleUpload(event)">
           <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="#aaa" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
@@ -182,33 +195,39 @@
         <div id="scan-loading" style="display:none" class="loading-row">
           AI 分析中<span class="dot" style="animation-delay:0s">．</span><span class="dot" style="animation-delay:.4s">．</span><span class="dot" style="animation-delay:.8s">．</span>
         </div>
-        <div id="ai-result-area" style="display:none">
+        <div id="ai-result-area" style="display:none;">
           <div class="ai-result" id="ai-result-content"></div>
           <button class="btn-main" onclick="addFromScan()">確認新增</button>
         </div>
       </div>
+    </div>
 
-      <div id="tab-manual" style="display:none">
-        <div class="form-row">
-          <div class="fg"><label>卡片名稱</label><input type="text" id="m-name" placeholder="如：玉山 Pi 卡"></div>
-          <div class="fg"><label>發卡銀行</label><input type="text" id="m-bank" placeholder="如：玉山銀行"></div>
-        </div>
-        <div class="form-row">
-          <div class="fg"><label>帳單金額 (NT$)</label><input type="number" id="m-amount" placeholder="0"></div>
-          <div class="fg"><label>截止日（幾號）</label><input type="number" id="m-due" placeholder="25" min="1" max="31"></div>
-        </div>
-        <div class="form-row">
-          <div class="fg">
-            <label>截止日是在帳單月的</label>
-            <div style="display:flex;gap:8px;margin-top:4px;">
-              <label style="display:flex;align-items:center;gap:5px;font-size:13px;color:#1a1a1a;cursor:pointer;"><input type="radio" name="due-month" id="due-same" value="same" checked style="width:auto;height:auto;"> 當月</label>
-              <label style="display:flex;align-items:center;gap:5px;font-size:13px;color:#1a1a1a;cursor:pointer;"><input type="radio" name="due-month" id="due-next" value="next" style="width:auto;height:auto;"> 次月</label>
-            </div>
-          </div>
-        </div>
-        <div class="fg"><label>卡片顏色</label><div class="cdots" id="cdots"></div></div>
-        <button class="btn-main" id="btn-add-manual" onclick="addManual()">新增卡片</button>
+    <!-- 管理銀行 -->
+    <div class="panel">
+      <h3>管理銀行</h3>
+      <div class="bank-list" id="bank-list"></div>
+      <div class="fg">
+        <label>銀行名稱</label>
+        <input type="text" id="b-name" placeholder="如：國泰世華、玉山、中信">
       </div>
+      <div class="fg-row">
+        <div class="fg">
+          <label>截止日（幾號）</label>
+          <input type="number" id="b-due" placeholder="25" min="1" max="31">
+        </div>
+        <div class="fg">
+          <label>截止月份</label>
+          <select id="b-due-month">
+            <option value="same">帳單當月</option>
+            <option value="next">帳單次月</option>
+          </select>
+        </div>
+      </div>
+      <div class="fg">
+        <label>顏色</label>
+        <div class="cdots" id="cdots"></div>
+      </div>
+      <button class="btn-main" id="btn-add-bank" onclick="addBank()">新增銀行</button>
     </div>
   </div>
 </div>
@@ -220,7 +239,7 @@
 import { initializeApp } from 'https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js';
 import { getAuth, GoogleAuthProvider, signInWithPopup, signOut, onAuthStateChanged }
   from 'https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js';
-import { getFirestore, doc, collection, getDocs, setDoc, deleteDoc, onSnapshot }
+import { getFirestore, doc, collection, getDocs, setDoc, deleteDoc }
   from 'https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js';
 
 const firebaseConfig = {
@@ -232,250 +251,331 @@ const firebaseConfig = {
   appId: "1:457819201693:web:9f8908c52870740fe8b474"
 };
 
-const app = initializeApp(firebaseConfig);
-const auth = getAuth(app);
-const db = getFirestore(app);
-
+const fbApp = initializeApp(firebaseConfig);
+const auth = getAuth(fbApp);
+const db = getFirestore(fbApp);
 let currentUser = null;
-let unsubscribe = null;
 
-window._db = db;
-window._getUser = () => currentUser;
-
-// Auth
 document.getElementById('btn-login').addEventListener('click', async () => {
-  try {
-    await signInWithPopup(auth, new GoogleAuthProvider());
-  } catch(e) { console.error(e); }
+  try { await signInWithPopup(auth, new GoogleAuthProvider()); } catch(e) { console.error(e); }
 });
 document.getElementById('btn-signout').addEventListener('click', () => signOut(auth));
 
 onAuthStateChanged(auth, async (user) => {
   currentUser = user;
+  window._getUser = () => currentUser;
   if (user) {
     document.getElementById('login-screen').style.display = 'none';
     document.getElementById('main-screen').style.display = 'block';
     document.getElementById('user-avatar').src = user.photoURL || '';
-    loadFromFirestore(user.uid);
+    await loadAll(user.uid);
   } else {
     document.getElementById('login-screen').style.display = 'flex';
     document.getElementById('main-screen').style.display = 'none';
-    if (unsubscribe) { unsubscribe(); unsubscribe = null; }
-    window._data = { cards: [], payments: {} };
+    window._data = { banks: [], bills: {}, payments: {} };
   }
 });
 
-async function loadFromFirestore(uid) {
-  if (unsubscribe) unsubscribe();
-  const userRef = doc(db, 'users', uid);
-  const cardsRef = collection(db, 'users', uid, 'cards');
-  const paymentsRef = collection(db, 'users', uid, 'payments');
-
-  const [cardsSnap, paymentsSnap] = await Promise.all([getDocs(cardsRef), getDocs(paymentsRef)]);
-  const cards = cardsSnap.docs.map(d => ({ id: d.id, ...d.data() }));
-  const payments = {};
-  paymentsSnap.docs.forEach(d => { payments[d.id] = d.data(); });
-  window._data = { cards, payments };
+async function loadAll(uid) {
+  const [banksSnap, billsSnap, paysSnap] = await Promise.all([
+    getDocs(collection(db, 'users', uid, 'banks')),
+    getDocs(collection(db, 'users', uid, 'bills')),
+    getDocs(collection(db, 'users', uid, 'payments')),
+  ]);
+  const banks = banksSnap.docs.map(d => ({ id: d.id, ...d.data() }));
+  const bills = {}; billsSnap.docs.forEach(d => { bills[d.id] = d.data(); });
+  const payments = {}; paysSnap.docs.forEach(d => { payments[d.id] = d.data(); });
+  window._data = { banks, bills, payments };
   window.render();
 }
 
-window._saveCard = async (card) => {
+window._saveBank = async (bank) => {
   const uid = window._getUser()?.uid; if (!uid) return;
-  await setDoc(doc(db, 'users', uid, 'cards', card.id), card);
-  showToast('已儲存');
+  await setDoc(doc(db, 'users', uid, 'banks', bank.id), bank);
+  showToast('銀行已儲存');
 };
-window._deleteCard = async (id) => {
+window._deleteBank = async (id) => {
   const uid = window._getUser()?.uid; if (!uid) return;
-  await deleteDoc(doc(db, 'users', uid, 'cards', id));
-  showToast('已刪除');
+  await deleteDoc(doc(db, 'users', uid, 'banks', id));
 };
-window._savePayment = async (monthKey, payments) => {
+window._saveBills = async (monthKey, obj) => {
   const uid = window._getUser()?.uid; if (!uid) return;
-  await setDoc(doc(db, 'users', uid, 'payments', monthKey), payments);
+  await setDoc(doc(db, 'users', uid, 'bills', monthKey), obj);
+};
+window._savePayments = async (monthKey, obj) => {
+  const uid = window._getUser()?.uid; if (!uid) return;
+  await setDoc(doc(db, 'users', uid, 'payments', monthKey), obj);
 };
 </script>
 
 <script>
-const COLORS=['#378ADD','#1D9E75','#D85A30','#D4537E','#7F77DD','#BA7517','#888780','#E24B4A'];
-let selColor=COLORS[0], scanData=null;
-let currentYear=new Date().getFullYear(), currentMonth=new Date().getMonth(), filter='all';
+const COLORS = ['#378ADD','#1D9E75','#D85A30','#D4537E','#7F77DD','#BA7517','#888780','#E24B4A'];
+let selColor = COLORS[0];
+let currentYear = new Date().getFullYear(), currentMonth = new Date().getMonth(), filter = 'all';
+let scanData = null;
+window._data = { banks: [], bills: {}, payments: {} };
 
-window._data = { cards: [], payments: {} };
-
+// Colour picker
 const cdotsEl = document.getElementById('cdots');
 COLORS.forEach(c => {
   const d = document.createElement('div');
-  d.className = 'cdot' + (c===selColor?' on':'');
+  d.className = 'cdot' + (c === selColor ? ' on' : '');
   d.style.background = c;
-  d.onclick = () => { selColor=c; document.querySelectorAll('.cdot').forEach(x=>x.classList.remove('on')); d.classList.add('on'); };
+  d.onclick = () => { selColor = c; document.querySelectorAll('.cdot').forEach(x => x.classList.remove('on')); d.classList.add('on'); };
   cdotsEl.appendChild(d);
 });
 
-function mk(y,m){ return `${y}-${String(m+1).padStart(2,'0')}`; }
+function mk(y, m) { return `${y}-${String(m+1).padStart(2,'0')}`; }
 
-function getStatus(card) {
-  const paid = window._data.payments[mk(currentYear,currentMonth)]?.[card.id];
-  if (paid) return 'paid';
+function getStatus(bankId) {
+  const k = mk(currentYear, currentMonth);
+  if (window._data.payments[k]?.[bankId]) return 'paid';
+  const bank = window._data.banks.find(b => b.id === bankId);
+  if (!bank) return 'unpaid';
   const today = new Date();
-  const isNext = card.dueMonth === 'next';
-  const dueYear = isNext ? (currentMonth===11?currentYear+1:currentYear) : currentYear;
-  const dueMonthIdx = isNext ? (currentMonth===11?0:currentMonth+1) : currentMonth;
-  const due = new Date(dueYear, dueMonthIdx, card.due);
-  const viewingCurrent = currentYear===today.getFullYear() && currentMonth===today.getMonth();
-  if (viewingCurrent && today>due) return 'overdue';
+  const isNext = bank.dueMonth === 'next';
+  const dy = isNext ? (currentMonth===11 ? currentYear+1 : currentYear) : currentYear;
+  const dm = isNext ? (currentMonth===11 ? 0 : currentMonth+1) : currentMonth;
+  const due = new Date(dy, dm, bank.due);
+  const viewingNow = currentYear===today.getFullYear() && currentMonth===today.getMonth();
+  if (viewingNow && today > due) return 'overdue';
   return 'unpaid';
 }
 
-async function togglePay(id) {
-  const k = mk(currentYear, currentMonth);
-  if (!window._data.payments[k]) window._data.payments[k] = {};
-  window._data.payments[k][id] = !window._data.payments[k][id];
-  if (!window._data.payments[k][id]) delete window._data.payments[k][id];
-  render();
-  await window._savePayment(k, window._data.payments[k]);
-}
-
-async function deleteCard(id) {
-  window._data.cards = window._data.cards.filter(c => c.id !== id);
-  render();
-  await window._deleteCard(id);
-}
-window.deleteCard = deleteCard;
-window.togglePay = togglePay;
-
-function setPTab(t, btn) {
-  ['scan','manual'].forEach(x => { document.getElementById('tab-'+x).style.display = x===t?'':'none'; });
-  document.querySelectorAll('.ptab').forEach(x=>x.classList.remove('on'));
-  btn.classList.add('on');
-}
-window.setPTab = setPTab;
-
-async function addManual() {
-  const name = document.getElementById('m-name').value.trim();
-  if (!name) { document.getElementById('m-name').focus(); return; }
-  const btn = document.getElementById('btn-add-manual');
+// ── Banks ──
+async function addBank() {
+  const name = document.getElementById('b-name').value.trim();
+  if (!name) { document.getElementById('b-name').focus(); return; }
+  const btn = document.getElementById('btn-add-bank');
   btn.disabled = true;
-  const card = {
-    id: Date.now().toString(),
-    name,
-    bank: document.getElementById('m-bank').value.trim(),
-    amount: parseInt(document.getElementById('m-amount').value)||0,
-    due: parseInt(document.getElementById('m-due').value)||25,
-    dueMonth: document.getElementById('due-next').checked ? 'next' : 'same',
+  const bank = {
+    id: Date.now().toString(), name,
+    due: parseInt(document.getElementById('b-due').value) || 25,
+    dueMonth: document.getElementById('b-due-month').value,
     color: selColor
   };
-  window._data.cards.push(card);
+  window._data.banks.push(bank);
   render();
-  await window._saveCard(card);
-  ['m-name','m-bank','m-amount','m-due'].forEach(id => document.getElementById(id).value='');
+  await window._saveBank(bank);
+  document.getElementById('b-name').value = '';
+  document.getElementById('b-due').value = '';
   btn.disabled = false;
 }
-window.addManual = addManual;
+window.addBank = addBank;
 
-async function addFromScan() {
-  if (!scanData) return;
-  const card = { id: Date.now().toString(), ...scanData };
-  window._data.cards.push(card);
+async function deleteBank(id) {
+  window._data.banks = window._data.banks.filter(b => b.id !== id);
   render();
-  await window._saveCard(card);
-  scanData = null;
-  document.getElementById('ai-result-area').style.display='none';
-  document.getElementById('bill-file').value='';
-  document.getElementById('upload-hint').textContent='點擊上傳帳單截圖或 PDF';
+  await window._deleteBank(id);
 }
-window.addFromScan = addFromScan;
+window.deleteBank = deleteBank;
 
+// ── Bills ──
+async function addBill() {
+  const bankId = document.getElementById('q-bank-id').value;
+  if (!bankId) return;
+  const amount = parseInt(document.getElementById('q-amount').value) || 0;
+  const k = mk(currentYear, currentMonth);
+  if (!window._data.bills[k]) window._data.bills[k] = {};
+  window._data.bills[k][bankId] = amount;
+  render();
+  await window._saveBills(k, window._data.bills[k]);
+  document.getElementById('q-amount').value = '';
+}
+window.addBill = addBill;
+
+async function deleteBill(bankId) {
+  const k = mk(currentYear, currentMonth);
+  if (window._data.bills[k]) { delete window._data.bills[k][bankId]; await window._saveBills(k, window._data.bills[k]); }
+  if (window._data.payments[k]) { delete window._data.payments[k][bankId]; await window._savePayments(k, window._data.payments[k]); }
+  render();
+}
+window.deleteBill = deleteBill;
+
+async function togglePay(bankId) {
+  const k = mk(currentYear, currentMonth);
+  if (!window._data.payments[k]) window._data.payments[k] = {};
+  window._data.payments[k][bankId] = !window._data.payments[k][bankId];
+  if (!window._data.payments[k][bankId]) delete window._data.payments[k][bankId];
+  render();
+  await window._savePayments(k, window._data.payments[k]);
+}
+window.togglePay = togglePay;
+
+// ── Scan ──
 async function handleUpload(e) {
   const file = e.target.files[0]; if (!file) return;
   document.getElementById('upload-hint').textContent = file.name;
-  document.getElementById('scan-loading').style.display='block';
-  document.getElementById('ai-result-area').style.display='none';
-  const b64 = await new Promise((res,rej)=>{ const r=new FileReader(); r.onload=()=>res(r.result.split(',')[1]); r.onerror=rej; r.readAsDataURL(file); });
-  const isImg = file.type.startsWith('image/');
+  document.getElementById('scan-loading').style.display = 'block';
+  document.getElementById('ai-result-area').style.display = 'none';
+  const b64 = await new Promise((res,rej) => { const r=new FileReader(); r.onload=()=>res(r.result.split(',')[1]); r.onerror=rej; r.readAsDataURL(file); });
   try {
-    const resp = await fetch('https://api.anthropic.com/v1/messages',{
-      method:'POST',
-      headers:{'Content-Type':'application/json'},
-      body:JSON.stringify({
-        model:'claude-sonnet-4-20250514', max_tokens:500,
-        messages:[{role:'user',content:[
-          isImg?{type:'image',source:{type:'base64',media_type:file.type,data:b64}}:{type:'document',source:{type:'base64',media_type:'application/pdf',data:b64}},
-          {type:'text',text:'這是一張信用卡帳單，請從中找出以下資訊並只回傳 JSON，不要任何說明文字或 markdown：{"name":"卡片名稱（銀行＋卡名）","bank":"發卡銀行","amount":帳單金額數字不含逗號,"due":繳款截止日是幾號只要數字1到31,"dueMonth":"若截止日在帳單月份的次月則填next，否則填same"}。若找不到某欄位就填空字串或0。'}
+    const resp = await fetch('https://api.anthropic.com/v1/messages', {
+      method: 'POST', headers: {'Content-Type':'application/json'},
+      body: JSON.stringify({
+        model: 'claude-sonnet-4-20250514', max_tokens: 500,
+        messages: [{role:'user', content:[
+          {type:'image', source:{type:'base64', media_type:file.type, data:b64}},
+          {type:'text', text:'這是一張信用卡帳單，請從中找出以下資訊並只回傳 JSON，不要任何說明文字或 markdown：{"bank":"發卡銀行名稱","amount":本期應繳金額數字不含逗號,"due":繳款截止日是幾號只要數字1到31,"dueMonth":"若截止日在帳單月份的次月則填next，否則填same"}。若找不到某欄位就填空字串或0。'}
         ]}]
       })
     });
     const d = await resp.json();
-    const text = d.content?.map(x=>x.text||'').join('');
+    const text = d.content?.map(x => x.text||'').join('');
     const parsed = JSON.parse(text.replace(/```json|```/g,'').trim());
-    scanData = {name:parsed.name||'信用卡',bank:parsed.bank||'',amount:parseInt(parsed.amount)||0,due:parseInt(parsed.due)||25,dueMonth:parsed.dueMonth||'same',color:COLORS[Math.floor(Math.random()*COLORS.length)]};
-    const dueMonthLabel = scanData.dueMonth==='next'?'次月':'當月';
-    document.getElementById('ai-result-content').innerHTML=`
-      <div class="ai-row"><span class="ai-lbl">卡片名稱</span><span>${scanData.name}</span></div>
+    scanData = { bank: parsed.bank||'', amount: parseInt(parsed.amount)||0, due: parseInt(parsed.due)||25, dueMonth: parsed.dueMonth||'same' };
+    const dml = scanData.dueMonth==='next' ? '次月' : '當月';
+    document.getElementById('ai-result-content').innerHTML = `
       <div class="ai-row"><span class="ai-lbl">發卡銀行</span><span>${scanData.bank||'—'}</span></div>
       <div class="ai-row"><span class="ai-lbl">帳單金額</span><span>NT$ ${scanData.amount.toLocaleString()}</span></div>
-      <div class="ai-row"><span class="ai-lbl">繳費截止日</span><span>${dueMonthLabel} ${scanData.due} 日</span></div>`;
-    document.getElementById('ai-result-area').style.display='block';
+      <div class="ai-row"><span class="ai-lbl">繳費截止日</span><span>${dml} ${scanData.due} 日</span></div>`;
+    document.getElementById('ai-result-area').style.display = 'block';
   } catch(err) {
-    document.getElementById('ai-result-content').innerHTML='<div style="color:#c0392b;font-size:13px;">辨識失敗，請改用手動輸入</div>';
-    document.getElementById('ai-result-area').style.display='block';
+    document.getElementById('ai-result-content').innerHTML = '<div style="color:#c0392b;font-size:13px;">辨識失敗，請改用快速新增</div>';
+    document.getElementById('ai-result-area').style.display = 'block';
   }
-  document.getElementById('scan-loading').style.display='none';
+  document.getElementById('scan-loading').style.display = 'none';
 }
 window.handleUpload = handleUpload;
 
+async function addFromScan() {
+  if (!scanData) return;
+  // match or create bank
+  let bank = window._data.banks.find(b => b.name.includes(scanData.bank) || scanData.bank.includes(b.name));
+  if (!bank && scanData.bank) {
+    bank = { id: Date.now().toString(), name: scanData.bank, due: scanData.due, dueMonth: scanData.dueMonth, color: COLORS[window._data.banks.length % COLORS.length] };
+    window._data.banks.push(bank);
+    await window._saveBank(bank);
+  }
+  if (bank) {
+    const k = mk(currentYear, currentMonth);
+    if (!window._data.bills[k]) window._data.bills[k] = {};
+    window._data.bills[k][bank.id] = scanData.amount;
+    await window._saveBills(k, window._data.bills[k]);
+  }
+  scanData = null;
+  document.getElementById('ai-result-area').style.display = 'none';
+  document.getElementById('bill-file').value = '';
+  document.getElementById('upload-hint').textContent = '點擊上傳帳單截圖或 PDF';
+  render();
+}
+window.addFromScan = addFromScan;
+
+// ── Helpers ──
+function setPTab(t, btn) {
+  ['quick','scan'].forEach(x => { document.getElementById('tab-'+x).style.display = x===t ? '' : 'none'; });
+  document.querySelectorAll('.ptab').forEach(x => x.classList.remove('on'));
+  btn.classList.add('on');
+}
+window.setPTab = setPTab;
+
 function chMon(d) {
-  currentMonth+=d;
-  if(currentMonth>11){currentMonth=0;currentYear++;}
-  if(currentMonth<0){currentMonth=11;currentYear--;}
+  currentMonth += d;
+  if (currentMonth > 11) { currentMonth=0; currentYear++; }
+  if (currentMonth < 0) { currentMonth=11; currentYear--; }
   render();
 }
 window.chMon = chMon;
 
-function setF(f,btn){filter=f;document.querySelectorAll('.tab').forEach(t=>t.classList.remove('on'));btn.classList.add('on');render();}
+function setF(f, btn) { filter=f; document.querySelectorAll('.tab').forEach(t => t.classList.remove('on')); btn.classList.add('on'); render(); }
 window.setF = setF;
 
 function showToast(msg) {
   const t = document.getElementById('toast');
   t.textContent = msg; t.classList.add('show');
-  setTimeout(()=>t.classList.remove('show'), 1800);
+  setTimeout(() => t.classList.remove('show'), 1800);
 }
 window.showToast = showToast;
 
+// ── Render ──
 window.render = function() {
-  const MONS=['1月','2月','3月','4月','5月','6月','7月','8月','9月','10月','11月','12月'];
-  document.getElementById('mon-lbl').textContent=`${currentYear} 年 ${MONS[currentMonth]}`;
-  let pN=0,uN=0,pA=0,uA=0;
-  window._data.cards.forEach(c=>{const s=getStatus(c);if(s==='paid'){pN++;pA+=c.amount;}else{uN++;uA+=c.amount;}});
-  document.getElementById('s-paid').textContent=pN+' 張';
-  document.getElementById('s-unpaid').textContent=uN+' 張';
-  document.getElementById('s-paid-amt').textContent=pA>0?'NT$ '+pA.toLocaleString():'';
-  document.getElementById('s-unpaid-amt').textContent=uA>0?'NT$ '+uA.toLocaleString():'';
-  const list=document.getElementById('card-list');
-  list.innerHTML='';
-  let cards=[...window._data.cards];
-  if(filter==='paid') cards=cards.filter(c=>getStatus(c)==='paid');
-  if(filter==='unpaid') cards=cards.filter(c=>getStatus(c)!=='paid');
-  if(!cards.length){list.innerHTML='<div class="empty">'+(window._data.cards.length===0?'請先從下方新增信用卡':'此篩選無符合帳單')+'</div>';return;}
-  const order={overdue:0,unpaid:1,paid:2};
-  cards.sort((a,b)=>(order[getStatus(a)]||1)-(order[getStatus(b)]||1)||a.due-b.due);
-  cards.forEach(card=>{
-    const s=getStatus(card), paid=s==='paid';
-    const bdgMap={paid:'<span class="bdg paid">已繳</span>',overdue:'<span class="bdg overdue">逾期</span>',unpaid:'<span class="bdg unpaid">未繳</span>'};
-    const div=document.createElement('div');
-    div.className='ci '+s;
-    div.innerHTML=`
-      <div class="avatar-card" style="background:${card.color}">${(card.bank||card.name)[0]}</div>
-      <div class="ci-info">
-        <div class="ci-name">${card.name}${bdgMap[s]}</div>
-        <div class="ci-meta">截止：${card.dueMonth==='next'?'次月':'當月'} ${card.due} 日${card.bank?' · '+card.bank:''}</div>
-      </div>
-      <span class="ci-amt">${card.amount>0?'NT$ '+card.amount.toLocaleString():'—'}</span>
-      <button class="chk${paid?' on':''}" onclick="togglePay('${card.id}')">
-        <svg viewBox="0 0 13 13" fill="none" stroke="${paid?'white':'#ccc'}" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><polyline points="2,7 5.5,10.5 11,3"/></svg>
-      </button>
-      <button class="del-btn" onclick="deleteCard('${card.id}')">×</button>`;
-    list.appendChild(div);
+  const MONS = ['1月','2月','3月','4月','5月','6月','7月','8月','9月','10月','11月','12月'];
+  document.getElementById('mon-lbl').textContent = `${currentYear} 年 ${MONS[currentMonth]}`;
+
+  const k = mk(currentYear, currentMonth);
+  const monthBills = window._data.bills[k] || {};
+
+  let pN=0, uN=0, pA=0, uA=0;
+  Object.entries(monthBills).forEach(([bankId, amount]) => {
+    const s = getStatus(bankId);
+    if (s==='paid') { pN++; pA+=amount; } else { uN++; uA+=amount; }
   });
+  document.getElementById('s-paid').textContent = pN + ' 張';
+  document.getElementById('s-unpaid').textContent = uN + ' 張';
+  document.getElementById('s-paid-amt').textContent = pA>0 ? 'NT$ '+pA.toLocaleString() : '';
+  document.getElementById('s-unpaid-amt').textContent = uA>0 ? 'NT$ '+uA.toLocaleString() : '';
+
+  // Bill list
+  const list = document.getElementById('bill-list');
+  list.innerHTML = '';
+  let entries = Object.entries(monthBills)
+    .map(([bankId, amount]) => ({ bankId, amount, bank: window._data.banks.find(b => b.id===bankId) }))
+    .filter(e => e.bank);
+  if (filter==='paid') entries = entries.filter(e => getStatus(e.bankId)==='paid');
+  if (filter==='unpaid') entries = entries.filter(e => getStatus(e.bankId)!=='paid');
+  if (!entries.length) {
+    const msg = Object.keys(monthBills).length===0 ? '本月尚無帳單，請從下方新增' : '此篩選無符合帳單';
+    list.innerHTML = `<div class="empty">${msg}</div>`;
+  } else {
+    const order = {overdue:0, unpaid:1, paid:2};
+    entries.sort((a,b) => (order[getStatus(a.bankId)]||1)-(order[getStatus(b.bankId)]||1) || a.bank.due-b.bank.due);
+    const bdgMap = {paid:'<span class="bdg paid">已繳</span>', overdue:'<span class="bdg overdue">逾期</span>', unpaid:'<span class="bdg unpaid">未繳</span>'};
+    entries.forEach(({ bankId, amount, bank }) => {
+      const s = getStatus(bankId), paid = s==='paid';
+      const dml = bank.dueMonth==='next' ? '次月' : '當月';
+      const div = document.createElement('div');
+      div.className = 'bi ' + s;
+      div.innerHTML = `
+        <div class="bi-dot" style="background:${bank.color}">${bank.name[0]}</div>
+        <div class="bi-info">
+          <div class="bi-name">${bank.name}${bdgMap[s]}</div>
+          <div class="bi-meta">截止：${dml} ${bank.due} 日</div>
+        </div>
+        <span class="bi-amt">${amount>0 ? 'NT$ '+amount.toLocaleString() : '—'}</span>
+        <button class="chk${paid?' on':''}" onclick="togglePay('${bankId}')">
+          <svg viewBox="0 0 13 13" fill="none" stroke="${paid?'white':'#ccc'}" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><polyline points="2,7 5.5,10.5 11,3"/></svg>
+        </button>
+        <button class="del-btn" onclick="deleteBill('${bankId}')">×</button>`;
+      list.appendChild(div);
+    });
+  }
+
+  // Quick-add bank selector
+  const sel = document.getElementById('q-bank-id');
+  const prevVal = sel.value;
+  sel.innerHTML = '';
+  if (window._data.banks.length === 0) {
+    document.getElementById('no-banks-hint').style.display = 'block';
+    document.getElementById('quick-form').style.display = 'none';
+  } else {
+    document.getElementById('no-banks-hint').style.display = 'none';
+    document.getElementById('quick-form').style.display = 'block';
+    window._data.banks.forEach(b => {
+      const opt = document.createElement('option');
+      opt.value = b.id; opt.textContent = b.name;
+      if (b.id === prevVal) opt.selected = true;
+      sel.appendChild(opt);
+    });
+  }
+
+  // Bank management list
+  const bankListEl = document.getElementById('bank-list');
+  bankListEl.innerHTML = '';
+  if (window._data.banks.length === 0) {
+    bankListEl.innerHTML = '<div style="font-size:13px;color:#bbb;padding:2px 0 10px;">尚未新增任何銀行</div>';
+  } else {
+    window._data.banks.forEach(b => {
+      const dml = b.dueMonth==='next' ? '次月' : '當月';
+      const div = document.createElement('div');
+      div.className = 'bank-item';
+      div.innerHTML = `
+        <div class="bank-dot" style="background:${b.color}"></div>
+        <span class="bank-name">${b.name}</span>
+        <span class="bank-due">截止 ${dml} ${b.due} 日</span>
+        <button class="bank-del" onclick="deleteBank('${b.id}')">×</button>`;
+      bankListEl.appendChild(div);
+    });
+  }
 };
 </script>
 </body>
