@@ -195,7 +195,16 @@
         </div>
         <div class="form-row">
           <div class="fg"><label>帳單金額 (NT$)</label><input type="number" id="m-amount" placeholder="0"></div>
-          <div class="fg"><label>截止日（每月幾號）</label><input type="number" id="m-due" placeholder="25" min="1" max="31"></div>
+          <div class="fg"><label>截止日（幾號）</label><input type="number" id="m-due" placeholder="25" min="1" max="31"></div>
+        </div>
+        <div class="form-row">
+          <div class="fg">
+            <label>截止日是在帳單月的</label>
+            <div style="display:flex;gap:8px;margin-top:4px;">
+              <label style="display:flex;align-items:center;gap:5px;font-size:13px;color:#1a1a1a;cursor:pointer;"><input type="radio" name="due-month" id="due-same" value="same" checked style="width:auto;height:auto;"> 當月</label>
+              <label style="display:flex;align-items:center;gap:5px;font-size:13px;color:#1a1a1a;cursor:pointer;"><input type="radio" name="due-month" id="due-next" value="next" style="width:auto;height:auto;"> 次月</label>
+            </div>
+          </div>
         </div>
         <div class="fg"><label>卡片顏色</label><div class="cdots" id="cdots"></div></div>
         <button class="btn-main" id="btn-add-manual" onclick="addManual()">新增卡片</button>
@@ -307,8 +316,13 @@ function mk(y,m){ return `${y}-${String(m+1).padStart(2,'0')}`; }
 function getStatus(card) {
   const paid = window._data.payments[mk(currentYear,currentMonth)]?.[card.id];
   if (paid) return 'paid';
-  const today=new Date(), due=new Date(currentYear,currentMonth,card.due);
-  if (currentYear===today.getFullYear() && currentMonth===today.getMonth() && today>due) return 'overdue';
+  const today = new Date();
+  const isNext = card.dueMonth === 'next';
+  const dueYear = isNext ? (currentMonth===11?currentYear+1:currentYear) : currentYear;
+  const dueMonthIdx = isNext ? (currentMonth===11?0:currentMonth+1) : currentMonth;
+  const due = new Date(dueYear, dueMonthIdx, card.due);
+  const viewingCurrent = currentYear===today.getFullYear() && currentMonth===today.getMonth();
+  if (viewingCurrent && today>due) return 'overdue';
   return 'unpaid';
 }
 
@@ -347,6 +361,7 @@ async function addManual() {
     bank: document.getElementById('m-bank').value.trim(),
     amount: parseInt(document.getElementById('m-amount').value)||0,
     due: parseInt(document.getElementById('m-due').value)||25,
+    dueMonth: document.getElementById('due-next').checked ? 'next' : 'same',
     color: selColor
   };
   window._data.cards.push(card);
@@ -385,19 +400,20 @@ async function handleUpload(e) {
         model:'claude-sonnet-4-20250514', max_tokens:500,
         messages:[{role:'user',content:[
           isImg?{type:'image',source:{type:'base64',media_type:file.type,data:b64}}:{type:'document',source:{type:'base64',media_type:'application/pdf',data:b64}},
-          {type:'text',text:'這是一張信用卡帳單，請從中找出以下資訊並只回傳 JSON，不要任何說明文字或 markdown：{"name":"卡片名稱（銀行＋卡名）","bank":"發卡銀行","amount":帳單金額數字不含逗號,"due":繳款截止日是幾號只要數字1到31}。若找不到某欄位就填空字串或0。'}
+          {type:'text',text:'這是一張信用卡帳單，請從中找出以下資訊並只回傳 JSON，不要任何說明文字或 markdown：{"name":"卡片名稱（銀行＋卡名）","bank":"發卡銀行","amount":帳單金額數字不含逗號,"due":繳款截止日是幾號只要數字1到31,"dueMonth":"若截止日在帳單月份的次月則填next，否則填same"}。若找不到某欄位就填空字串或0。'}
         ]}]
       })
     });
     const d = await resp.json();
     const text = d.content?.map(x=>x.text||'').join('');
     const parsed = JSON.parse(text.replace(/```json|```/g,'').trim());
-    scanData = {name:parsed.name||'信用卡',bank:parsed.bank||'',amount:parseInt(parsed.amount)||0,due:parseInt(parsed.due)||25,color:COLORS[Math.floor(Math.random()*COLORS.length)]};
+    scanData = {name:parsed.name||'信用卡',bank:parsed.bank||'',amount:parseInt(parsed.amount)||0,due:parseInt(parsed.due)||25,dueMonth:parsed.dueMonth||'same',color:COLORS[Math.floor(Math.random()*COLORS.length)]};
+    const dueMonthLabel = scanData.dueMonth==='next'?'次月':'當月';
     document.getElementById('ai-result-content').innerHTML=`
       <div class="ai-row"><span class="ai-lbl">卡片名稱</span><span>${scanData.name}</span></div>
       <div class="ai-row"><span class="ai-lbl">發卡銀行</span><span>${scanData.bank||'—'}</span></div>
       <div class="ai-row"><span class="ai-lbl">帳單金額</span><span>NT$ ${scanData.amount.toLocaleString()}</span></div>
-      <div class="ai-row"><span class="ai-lbl">繳費截止日</span><span>每月 ${scanData.due} 日</span></div>`;
+      <div class="ai-row"><span class="ai-lbl">繳費截止日</span><span>${dueMonthLabel} ${scanData.due} 日</span></div>`;
     document.getElementById('ai-result-area').style.display='block';
   } catch(err) {
     document.getElementById('ai-result-content').innerHTML='<div style="color:#c0392b;font-size:13px;">辨識失敗，請改用手動輸入</div>';
@@ -451,7 +467,7 @@ window.render = function() {
       <div class="avatar-card" style="background:${card.color}">${(card.bank||card.name)[0]}</div>
       <div class="ci-info">
         <div class="ci-name">${card.name}${bdgMap[s]}</div>
-        <div class="ci-meta">截止：每月 ${card.due} 日${card.bank?' · '+card.bank:''}</div>
+        <div class="ci-meta">截止：${card.dueMonth==='next'?'次月':'當月'} ${card.due} 日${card.bank?' · '+card.bank:''}</div>
       </div>
       <span class="ci-amt">${card.amount>0?'NT$ '+card.amount.toLocaleString():'—'}</span>
       <button class="chk${paid?' on':''}" onclick="togglePay('${card.id}')">
